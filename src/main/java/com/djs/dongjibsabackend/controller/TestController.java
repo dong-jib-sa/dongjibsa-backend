@@ -12,6 +12,6 @@ public class TestController {
 
     @GetMapping("/cicdTest")
     public String test1() {
-        return "20230728 동집사 백엔드 서버입니다! 하이";
+        return "20230728 동집사 백엔드 서버  ◕‿◕✿ ";
     }
 }
