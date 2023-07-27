@@ -12,6 +12,6 @@ public class TestController {
 
     @GetMapping("/cicdTest")
     public String test1() {
-        return "20230727 서버 배포 테스트";
+        return "20230727 서버 배포 테스트(첫번째 재시도)";
     }
 }
