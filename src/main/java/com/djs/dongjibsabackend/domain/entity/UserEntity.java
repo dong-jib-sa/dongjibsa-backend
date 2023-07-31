@@ -1,5 +1,6 @@
 package com.djs.dongjibsabackend.domain.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -20,14 +21,15 @@ import lombok.NoArgsConstructor;
 public class UserEntity extends BaseEntity {
 
     @Id
+    @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String userName;
     private Float calorieAvg;
-    private Integer totalSharingNum;
+    private Integer totalSharingNumPerRecipe; // 단일 레시피의 재료별 나눔 수량 총합
+    private Integer totalSharingNum; // 모든 레시피의 나눔 수량 총합
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private List<RecipeEntity> recipeList = new ArrayList<>();
 
-    private Integer totalSharingNumPerRecipe; // 단일 레시피 내 각 재료별 나눔 수량의 총합
 }
