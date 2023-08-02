@@ -5,6 +5,7 @@ import com.djs.dongjibsabackend.domain.entity.LocationEntity;
 import com.djs.dongjibsabackend.domain.entity.RecipeEntity;
 import com.djs.dongjibsabackend.domain.entity.UserEntity;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,7 +26,7 @@ public class RecipeDto {
     private Integer calorie;
     private Integer peopleCount;
     private LocationEntity location;
-    private IngredientEntity ingredient;
+    private List<IngredientEntity> ingredientList;
     private Integer totalQty;
     private Integer requiredQty;
     private Integer sharingAvailableQty;
@@ -50,26 +51,26 @@ public class RecipeDto {
         this.imgUrl = imgUrl;
     }
 
-    public RecipeEntity toEntity(UserEntity user, LocationEntity location,
-                                 IngredientEntity ingredient) {
-        return RecipeEntity.builder()
-                           .title(this.title)
-                           .content(this.content)
-                           .expectingPrice(this.expectingPrice)
-                           .pricePerOne(this.pricePerOne)
-                           .user(user)
-                           .calorie(this.calorie)
-                           .peopleCount(this.peopleCount)
-                           .location(location)
-                           .ingredient(ingredient)
-                           .totalQty(this.totalQty)
-                           .requiredQty(this.requiredQty)
-                           .sharingAvailableQty(this.sharingAvailableQty)
-                           .imgUrl(this.imgUrl)
-                           .commentsCount(this.commentsCount)
-                           .build();
-    }
-
+    //    public RecipeEntity toEntity(UserEntity user, LocationEntity location,
+//                                 IngredientEntity ingredient) {
+//        return RecipeEntity.builder()
+//                           .title(this.title)
+//                           .content(this.content)
+//                           .expectingPrice(this.expectingPrice)
+//                           .pricePerOne(this.pricePerOne)
+//                           .user(user)
+//                           .calorie(this.calorie)
+//                           .peopleCount(this.peopleCount)
+//                           .location(location)
+//                           .ingredientList(ingredient)
+//                           .totalQty(this.totalQty)
+//                           .requiredQty(this.requiredQty)
+//                           .sharingAvailableQty(this.sharingAvailableQty)
+//                           .imgUrl(this.imgUrl)
+//                           .commentsCount(this.commentsCount)
+//                           .build();
+//    }
+//
     public static RecipeDto toDto(RecipeEntity recipe) {
         return RecipeDto.builder()
                         .id(recipe.getId())
@@ -81,15 +82,12 @@ public class RecipeDto {
                         .calorie(recipe.getCalorie())
                         .peopleCount(recipe.getPeopleCount())
                         .location(recipe.getLocation())
-                        .ingredient(recipe.getIngredient())
-                        .totalQty(recipe.getTotalQty())
-                        .requiredQty(recipe.getRequiredQty())
-                        .sharingAvailableQty(recipe.getSharingAvailableQty())
+//                        .ingredientList(recipe.getIngredientList().)
                         .imgUrl(recipe.getImgUrl())
-                        .commentsCount(recipe.getCommentsCount())
                         .createdAt(recipe.getCreatedAt())
                         .updatedAt(recipe.getUpdatedAt())
                         .build();
-    }
+//    }
 
+    }
 }
