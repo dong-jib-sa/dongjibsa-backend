@@ -23,12 +23,12 @@ public class RecipeIngredientEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id")
-    private RecipeEntity recipe;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "recipe_id")
+//    private RecipeEntity recipe;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "ingredient_id")
     private IngredientEntity ingredient;
 
     private Integer totalQty;
@@ -36,10 +36,12 @@ public class RecipeIngredientEntity {
     private Integer sharingAvailableQty;
 
     @Builder
-    public RecipeIngredientEntity(RecipeEntity recipe, IngredientEntity ingredient,
+    public RecipeIngredientEntity(
+//        RecipeEntity recipe,
+                                  IngredientEntity ingredient,
                                   Integer totalQty, Integer requiredQty,
                                   Integer sharingAvailableQty) {
-        this.recipe = recipe;
+//        this.recipe = recipe;
         this.ingredient = ingredient;
         this.totalQty = totalQty;
         this.requiredQty = requiredQty;

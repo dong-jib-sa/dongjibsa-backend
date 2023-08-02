@@ -1,10 +1,7 @@
 package com.djs.dongjibsabackend.domain.dto.recipe;
 
-import com.djs.dongjibsabackend.domain.dto.ingredient.IngredientDto;
-import com.djs.dongjibsabackend.domain.dto.ingredient.IngredientResponse;
-import com.djs.dongjibsabackend.domain.entity.IngredientEntity;
 import com.djs.dongjibsabackend.domain.entity.LocationEntity;
-import com.djs.dongjibsabackend.domain.entity.RecipeEntity;
+import com.djs.dongjibsabackend.domain.entity.RecipeEntityOld;
 import com.djs.dongjibsabackend.domain.entity.RecipeIngredientEntity;
 import com.djs.dongjibsabackend.domain.entity.UserEntity;
 import java.util.List;
@@ -45,19 +42,19 @@ public class WriteRecipeRequest {
         this.imgUrl = imgUrl;
     }
 
-    public RecipeEntity toEntity(UserEntity user, LocationEntity location) {
-        return RecipeEntity.builder()
-                           .title(this.title)
-                           .content(this.content)
-                           .expectingPrice(this.expectingPrice)
-                           .pricePerOne(this.pricePerOne)
-                           .user(user)
-                           .calorie(this.calorie)
-                           .peopleCount(this.peopleCount)
-                           .location(location)
-                           .ingredientList(this.ingredientList)
-                           .imgUrl(this.imgUrl)
-                           .build();
+    public RecipeEntityOld toEntity(UserEntity user, LocationEntity location) {
+        return RecipeEntityOld.builder()
+                              .title(this.title)
+                              .content(this.content)
+                              .expectingPrice(this.expectingPrice)
+                              .pricePerOne(this.pricePerOne)
+                              .user(user)
+                              .calorie(this.calorie)
+                              .peopleCount(this.peopleCount)
+                              .location(location)
+                              .ingredientList(this.ingredientList)
+                              .imgUrl(this.imgUrl)
+                              .build();
     }
 
 //    public List<IngredientEntity> fromDtosToEntities(List<IngredientDto> ingredientDtos) {

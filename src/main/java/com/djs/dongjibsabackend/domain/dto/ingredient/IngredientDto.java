@@ -1,8 +1,6 @@
 package com.djs.dongjibsabackend.domain.dto.ingredient;
 
-import com.djs.dongjibsabackend.domain.dto.recipe.RecipeDto;
-import com.djs.dongjibsabackend.domain.entity.IngredientEntity;
-import com.djs.dongjibsabackend.domain.entity.RecipeEntity;
+import com.djs.dongjibsabackend.domain.dto.recipe.RecipeDtoOld;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,5 +15,5 @@ public class IngredientDto {
 
     private Long id;
     private String name;
-    private List<RecipeDto> recipes;
+    private List<RecipeDtoOld> recipes;
 }
