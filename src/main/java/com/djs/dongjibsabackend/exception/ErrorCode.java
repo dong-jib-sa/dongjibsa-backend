@@ -15,7 +15,11 @@ public enum ErrorCode {
 
     // Location ErrorCodes
     LOCATION_NOT_FOUND(HttpStatus.NOT_FOUND, "Location Not Exist."),
+    INGREDIENT_NOT_AVAILABLE(HttpStatus.NOT_FOUND, "Ingredient Not Exist."),
     ;
+
+    // Ingredient ErrorCodes
+
 
     private HttpStatus httpStatus;
     private String message;
