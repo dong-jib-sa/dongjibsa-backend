@@ -1,80 +1,62 @@
 package com.djs.dongjibsabackend.domain.entity;
 
-
-import jakarta.persistence.CascadeType;
+import com.djs.dongjibsabackend.domain.dto.recipe.RecipeDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "recipe")
+@Table(name = "recipes")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RecipeEntity extends BaseEntity {
-
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String title; // 제목
-    private String content; // 내용
-
-    private Integer expectingPrice; // 예상 가격
-    private Integer pricePerOne; // 1인당 가격
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private UserEntity user;
-
-    private Integer calorie; // 1인분 칼로리
-    private Integer peopleCount; // 파티원 수
-
-    @OneToOne
-    @JoinColumn(name = "location_id")
-    private LocationEntity location; // 위치
-
-    @OneToMany(mappedBy = "recipe", orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<RecipeIngredientEntity> ingredientList = new ArrayList<>();
-    private String imgUrl; // 레시피 이미지 Url
-
+    private String recipeTitle;
+    private Integer calorie;
+    private Integer peopleNum;
+    private Long ingredientId;
+    private String ingredientName;
+    private Integer totalQty;
+    private Integer requiredQty;
+    private Integer sharingAvailableQty;
+    private String imgUrl;
 
     @Builder
-    public RecipeEntity (Long id, String title, String content,
-                         Integer expectingPrice, Integer pricePerOne,
-                         UserEntity user, Integer calorie, Integer peopleCount,
-                         LocationEntity location,
-                         List<RecipeIngredientEntity> ingredientList,
-                         String imgUrl) {
+    public RecipeEntity (Long id, String recipeTitle, Integer calorie, Integer peopleNum, Long ingredientId, String ingredientName,
+                         Integer totalQty, Integer requiredQty, Integer sharingAvailableQty, String imgUrl) {
         this.id = id;
-        this.title = title;
-        this.content = content;
-        this.expectingPrice = expectingPrice;
-        this.pricePerOne = pricePerOne;
-        this.user = user;
+        this.recipeTitle = recipeTitle;
         this.calorie = calorie;
-        this.peopleCount = peopleCount;
-        this.location = location;
-        this.ingredientList = ingredientList;
+        this.peopleNum = peopleNum;
+        this.ingredientId = ingredientId;
+        this.ingredientName = ingredientName;
+        this.totalQty = totalQty;
+        this.requiredQty = requiredQty;
+        this.sharingAvailableQty = sharingAvailableQty;
         this.imgUrl = imgUrl;
     }
 
-//    public void addIngredientToRecipe(RecipeIngredientEntity ingredient) {
-//        ingredientList.add(ingredient);
-//    }
+    public RecipeDto toDto() {
+        return RecipeDto.builder()
+            .id(this.id)
+            .recipeTitle(this.recipeTitle)
+            .calorie(this.calorie)
+            .peopleNum(this.peopleNum)
+            .ingredientId(this.ingredientId)
+            .ingredientName(this.ingredientName)
+            .totalQty(this.totalQty)
+            .requiredQty(this.requiredQty)
+            .sharingAvailableQty(this.sharingAvailableQty)
+            .imgUrl(this.imgUrl).build();
+    }
 }
