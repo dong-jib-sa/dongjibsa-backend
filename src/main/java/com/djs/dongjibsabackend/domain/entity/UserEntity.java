@@ -11,6 +11,7 @@ import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -29,7 +30,17 @@ public class UserEntity extends BaseEntity {
     private Integer totalSharingNumPerRecipe; // 단일 레시피의 재료별 나눔 수량 총합
     private Integer totalSharingNum; // 모든 레시피의 나눔 수량 총합
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<RecipeEntity> recipeList = new ArrayList<>();
 
+    @Builder
+    public UserEntity(Long id, String userName, Float calorieAvg, Integer totalSharingNumPerRecipe, Integer totalSharingNum,
+                      List<RecipeEntity> recipeList) {
+        this.id = id;
+        this.userName = userName;
+        this.calorieAvg = calorieAvg;
+        this.totalSharingNumPerRecipe = totalSharingNumPerRecipe;
+        this.totalSharingNum = totalSharingNum;
+        this.recipeList = recipeList;
+    }
 }
