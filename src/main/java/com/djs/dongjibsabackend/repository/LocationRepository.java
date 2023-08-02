@@ -6,6 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface LocationRepository extends JpaRepository<LocationEntity, Long> {
 
-    @Override
-    Optional<LocationEntity> findById(Long id);
+    Optional<LocationEntity> findLocationByDong(String dong);
 }
