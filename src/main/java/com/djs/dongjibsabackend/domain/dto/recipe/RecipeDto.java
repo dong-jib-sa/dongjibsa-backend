@@ -1,11 +1,17 @@
 package com.djs.dongjibsabackend.domain.dto.recipe;
 
+import com.djs.dongjibsabackend.domain.dto.recipe_ingredient.RecipeIngredientDto;
 import com.djs.dongjibsabackend.domain.entity.IngredientEntity;
 import com.djs.dongjibsabackend.domain.entity.LocationEntity;
 import com.djs.dongjibsabackend.domain.entity.RecipeEntity;
+import com.djs.dongjibsabackend.domain.entity.RecipeIngredientEntity;
 import com.djs.dongjibsabackend.domain.entity.UserEntity;
+import com.djs.dongjibsabackend.exception.AppException;
+import com.djs.dongjibsabackend.exception.ErrorCode;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,8 +19,7 @@ import lombok.NoArgsConstructor;
 
 @Builder
 @Getter
-@AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RecipeDto {
 
     private Long id;
@@ -26,51 +31,32 @@ public class RecipeDto {
     private Integer calorie;
     private Integer peopleCount;
     private LocationEntity location;
-    private List<IngredientEntity> ingredientList;
-    private Integer totalQty;
-    private Integer requiredQty;
-    private Integer sharingAvailableQty;
+
+    private List<RecipeIngredientEntity> recipeIngredients;
     private String imgUrl;
     private Integer commentsCount;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public RecipeDto(Long id, String title, String content, Integer expectingPrice, Integer pricePerOne, Integer calorie,
-                     Integer peopleCount,
-                     Integer totalQty, Integer requiredQty, Integer sharingAvailableQty, String imgUrl) {
+    public RecipeDto(Long id, String title, String content, Integer expectingPrice, Integer pricePerOne, UserEntity user, Integer calorie,
+                     Integer peopleCount, LocationEntity location, List<RecipeIngredientEntity> recipeIngredients, String imgUrl,
+                     Integer commentsCount, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.title = title;
         this.content = content;
         this.expectingPrice = expectingPrice;
         this.pricePerOne = pricePerOne;
+        this.user = user;
         this.calorie = calorie;
         this.peopleCount = peopleCount;
-        this.totalQty = totalQty;
-        this.requiredQty = requiredQty;
-        this.sharingAvailableQty = sharingAvailableQty;
+        this.location = location;
+        this.recipeIngredients = recipeIngredients;
         this.imgUrl = imgUrl;
+        this.commentsCount = commentsCount;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
-    //    public RecipeEntity toEntity(UserEntity user, LocationEntity location,
-//                                 IngredientEntity ingredient) {
-//        return RecipeEntity.builder()
-//                           .title(this.title)
-//                           .content(this.content)
-//                           .expectingPrice(this.expectingPrice)
-//                           .pricePerOne(this.pricePerOne)
-//                           .user(user)
-//                           .calorie(this.calorie)
-//                           .peopleCount(this.peopleCount)
-//                           .location(location)
-//                           .ingredientList(ingredient)
-//                           .totalQty(this.totalQty)
-//                           .requiredQty(this.requiredQty)
-//                           .sharingAvailableQty(this.sharingAvailableQty)
-//                           .imgUrl(this.imgUrl)
-//                           .commentsCount(this.commentsCount)
-//                           .build();
-//    }
-//
     public static RecipeDto toDto(RecipeEntity recipe) {
         return RecipeDto.builder()
                         .id(recipe.getId())
@@ -82,12 +68,21 @@ public class RecipeDto {
                         .calorie(recipe.getCalorie())
                         .peopleCount(recipe.getPeopleCount())
                         .location(recipe.getLocation())
-//                        .ingredientList(recipe.getIngredientList().)
+                        .recipeIngredients(recipe.getRecipeIngredients())
                         .imgUrl(recipe.getImgUrl())
                         .createdAt(recipe.getCreatedAt())
                         .updatedAt(recipe.getUpdatedAt())
                         .build();
-//    }
+
+    }
+
+    public static List<RecipeIngredientDto> toDtoList(List<RecipeIngredientEntity> entityList) {
+        List<RecipeIngredientDto> dtoList = new ArrayList<>();
+        for (RecipeIngredientEntity entity: entityList) {
+            RecipeIngredientDto dto = RecipeIngredientDto.toDto(entity);
+            dtoList.add(dto);
+            }
+        return dtoList;
 
     }
 }

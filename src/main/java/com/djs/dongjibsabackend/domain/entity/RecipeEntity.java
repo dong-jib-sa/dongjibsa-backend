@@ -49,8 +49,9 @@ public class RecipeEntity extends BaseEntity {
     @JoinColumn(name = "location_id")
     private LocationEntity location; // 위치
 
+    // 재료-수량 객체 리스트
     @OneToMany(mappedBy = "recipe", orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<RecipeIngredientEntity> ingredientList = new ArrayList<>();
+    private List<RecipeIngredientEntity> recipeIngredients = new ArrayList<>();
     private String imgUrl; // 레시피 이미지 Url
 
 
@@ -59,7 +60,7 @@ public class RecipeEntity extends BaseEntity {
                          Integer expectingPrice, Integer pricePerOne,
                          UserEntity user, Integer calorie, Integer peopleCount,
                          LocationEntity location,
-                         List<RecipeIngredientEntity> ingredientList,
+                         List<RecipeIngredientEntity> recipeIngredients,
                          String imgUrl) {
         this.id = id;
         this.title = title;
@@ -70,11 +71,14 @@ public class RecipeEntity extends BaseEntity {
         this.calorie = calorie;
         this.peopleCount = peopleCount;
         this.location = location;
-        this.ingredientList = ingredientList;
+        this.recipeIngredients = recipeIngredients;
         this.imgUrl = imgUrl;
     }
 
-//    public void addIngredientToRecipe(RecipeIngredientEntity ingredient) {
-//        ingredientList.add(ingredient);
-//    }
+    // --- 연관 관계 메서드 --- //
+
+
+    public void updateRecipeIngredients (List<RecipeIngredientEntity> recipeIngredients) {
+        this.recipeIngredients = recipeIngredients;
+    }
 }

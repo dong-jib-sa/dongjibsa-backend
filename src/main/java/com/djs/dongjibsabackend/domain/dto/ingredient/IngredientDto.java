@@ -4,18 +4,23 @@ import com.djs.dongjibsabackend.domain.dto.recipe.RecipeDto;
 import com.djs.dongjibsabackend.domain.entity.IngredientEntity;
 import com.djs.dongjibsabackend.domain.entity.RecipeEntity;
 import java.util.List;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class IngredientDto {
 
     private Long id;
     private String name;
-    private List<RecipeDto> recipes;
+
+    @Builder
+    public IngredientDto(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
 }

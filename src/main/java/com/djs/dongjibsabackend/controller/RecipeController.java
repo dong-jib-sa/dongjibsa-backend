@@ -1,10 +1,8 @@
 package com.djs.dongjibsabackend.controller;
 
 import com.djs.dongjibsabackend.domain.dto.Response;
-import com.djs.dongjibsabackend.domain.dto.ingredient.AddIngredientRequest;
 import com.djs.dongjibsabackend.domain.dto.recipe.RecipeDto;
 import com.djs.dongjibsabackend.domain.dto.recipe.WriteRecipeRequest;
-import com.djs.dongjibsabackend.domain.entity.UserEntity;
 import com.djs.dongjibsabackend.service.RecipeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,11 +20,9 @@ public class RecipeController {
 
     // 1. 게시글 작성
     @PostMapping("/new")
-    public Response registerPost(@RequestBody WriteRecipeRequest writeRecipeRequest,
-                                 @RequestBody AddIngredientRequest addIngredientRequest,
-                                 UserEntity user) {
+    public Response registerPost(@RequestBody WriteRecipeRequest writeRecipeRequest) {
 
-        RecipeDto recipeDto = recipeService.register(writeRecipeRequest, user);
+        RecipeDto recipeDto = recipeService.register(writeRecipeRequest);
 
         return Response.success(recipeDto);
     }
