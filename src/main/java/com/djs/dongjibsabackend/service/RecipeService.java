@@ -11,10 +11,12 @@ import com.djs.dongjibsabackend.repository.LocationRepository;
 import com.djs.dongjibsabackend.repository.RecipeRepository;
 import com.djs.dongjibsabackend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class RecipeService {
 
     private final UserRepository userRepository;
@@ -24,9 +26,9 @@ public class RecipeService {
     // 여러 가지 재료 등록 기능 추가하기
     public RecipeDto register(WriteRecipeRequest writeRecipeRequest, UserEntity user) {
         Long userId = user.getId();
-        Long locationId = writeRecipeRequest.getLocation().getId();
+        // Long locationId = writeRecipeRequest.getLocation().getId();
 
-        LocationEntity validateLocation = locationRepository.findById(locationId)
+        LocationEntity validateLocation = locationRepository.findLocationByDong(writeRecipeRequest.getLocation().getDong())
             .orElseThrow(() -> new AppException(ErrorCode.LOCATION_NOT_FOUND, "해당 지역이 존재하지 않습니다."));
 
         UserEntity validateUser = userRepository.findById(userId)
