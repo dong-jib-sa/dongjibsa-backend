@@ -22,11 +22,9 @@ public class RecipeController {
 
     // 1. 게시글 작성
     @PostMapping("/new")
-    public Response registerPost(@RequestBody WriteRecipeRequest writeRecipeRequest,
-                                 @RequestBody AddIngredientRequest addIngredientRequest,
-                                 UserEntity user) {
+    public Response registerPost(@RequestBody WriteRecipeRequest writeRecipeRequest) {
 
-        RecipeDto recipeDto = recipeService.register(writeRecipeRequest, user);
+        RecipeDto recipeDto = recipeService.register(writeRecipeRequest);
 
         return Response.success(recipeDto);
     }
