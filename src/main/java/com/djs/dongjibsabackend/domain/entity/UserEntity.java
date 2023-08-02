@@ -29,7 +29,7 @@ public class UserEntity extends BaseEntity {
     private Integer totalSharingNumPerRecipe; // 단일 레시피의 재료별 나눔 수량 총합
     private Integer totalSharingNum; // 모든 레시피의 나눔 수량 총합
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
-    private List<RecipeEntity> recipeList = new ArrayList<>();
+//    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+//    private List<RecipeEntity> recipeList = new ArrayList<>();
 
 }
