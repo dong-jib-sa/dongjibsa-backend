@@ -68,7 +68,7 @@ public class RecipeService {
         for (RecipeIngredientDto dto: dtoList) {
             // 레시피에 등록된 재료가 있는지 탐색..
             IngredientEntity ingredientEntity = ingredientRepository.findById(dto.getIngredientId())
-                .orElseThrow(() -> new AppException(ErrorCode.INGREDIENT_NOT_AVAILABLE, "재료 없어"));
+                .orElseThrow(() -> new AppException(ErrorCode.INGREDIENT_NOT_AVAILABLE, "해당 재료는 입력할 수 없습니다."));
             if (ingredientEntity != null) {
                 RecipeIngredientEntity recipeIngredientEntity =
                     RecipeIngredientEntity.addIngredientToRecipe(savedRecipe, // 재료 리스트가 비어 있는 레시피 객체
