@@ -1,14 +1,10 @@
 package com.djs.dongjibsabackend.service;
 
 import com.djs.dongjibsabackend.domain.dto.ingredient.IngredientDto;
-import com.djs.dongjibsabackend.domain.dto.recipe_ingredient.RecipeIngredientDto;
 import com.djs.dongjibsabackend.domain.entity.IngredientEntity;
-import com.djs.dongjibsabackend.domain.entity.RecipeIngredientEntity;
 import com.djs.dongjibsabackend.exception.AppException;
 import com.djs.dongjibsabackend.exception.ErrorCode;
 import com.djs.dongjibsabackend.repository.IngredientRepository;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

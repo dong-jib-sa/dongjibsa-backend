@@ -4,13 +4,10 @@ package com.djs.dongjibsabackend.domain.entity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
@@ -23,10 +20,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "recipe")
+@Table(name = "post")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class RecipeEntity extends BaseEntity {
+public class PostEntity extends BaseEntity {
 
     @Id
     @Column(name = "id", nullable = false)
@@ -50,18 +47,18 @@ public class RecipeEntity extends BaseEntity {
     private LocationEntity location; // 위치
 
     // 재료-수량 객체 리스트
-    @OneToMany(mappedBy = "recipe", orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<RecipeIngredientEntity> recipeIngredients = new ArrayList<>();
+    @OneToMany(mappedBy = "post", orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<PostIngredientEntity> recipeIngredients = new ArrayList<>();
     private String imgUrl; // 레시피 이미지 Url
 
 
     @Builder
-    public RecipeEntity (Long id, String title, String content,
-                         Integer expectingPrice, Integer pricePerOne,
-                         UserEntity user, Integer calorie, Integer peopleCount,
-                         LocationEntity location,
-                         List<RecipeIngredientEntity> recipeIngredients,
-                         String imgUrl) {
+    public PostEntity(Long id, String title, String content,
+                      Integer expectingPrice, Integer pricePerOne,
+                      UserEntity user, Integer calorie, Integer peopleCount,
+                      LocationEntity location,
+                      List<PostIngredientEntity> recipeIngredients,
+                      String imgUrl) {
         this.id = id;
         this.title = title;
         this.content = content;
@@ -78,7 +75,7 @@ public class RecipeEntity extends BaseEntity {
     // --- 연관 관계 메서드 --- //
 
 
-    public void updateRecipeIngredients (List<RecipeIngredientEntity> recipeIngredients) {
+    public void updatePostIngredients(List<PostIngredientEntity> recipeIngredients) {
         this.recipeIngredients = recipeIngredients;
     }
 }

@@ -1,5 +1,6 @@
 package com.djs.dongjibsabackend.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -30,17 +31,18 @@ public class UserEntity extends BaseEntity {
     private Integer totalSharingNumPerRecipe; // 단일 레시피의 재료별 나눔 수량 총합
     private Integer totalSharingNum; // 모든 레시피의 나눔 수량 총합
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private List<RecipeEntity> recipeList = new ArrayList<>();
+    private List<PostEntity> postList = new ArrayList<>();
 
     @Builder
     public UserEntity(Long id, String userName, Float calorieAvg, Integer totalSharingNumPerRecipe, Integer totalSharingNum,
-                      List<RecipeEntity> recipeList) {
+                      List<PostEntity> postList) {
         this.id = id;
         this.userName = userName;
         this.calorieAvg = calorieAvg;
         this.totalSharingNumPerRecipe = totalSharingNumPerRecipe;
         this.totalSharingNum = totalSharingNum;
-        this.recipeList = recipeList;
+        this.postList = postList;
     }
 }
