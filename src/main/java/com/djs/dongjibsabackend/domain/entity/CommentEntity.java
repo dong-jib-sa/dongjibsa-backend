@@ -31,8 +31,8 @@ public class CommentEntity extends BaseEntity {
 
     // join
     @ManyToOne
-    @JoinColumn(name = "repcipe_id")
-    private RecipeEntity recipe;
+    @JoinColumn(name = "post_id")
+    private PostEntity post;
 
     @ColumnDefault("0")
     private Long parentId;
