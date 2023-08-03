@@ -26,11 +26,11 @@ public class PostIngredientEntity {
     private Long id;
 
     @JsonIgnore // 에러 해결
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "post_id")
     private PostEntity post;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne // 에러 해결
     @JoinColumn(name = "ingredient_id")
     private IngredientEntity ingredient;
 

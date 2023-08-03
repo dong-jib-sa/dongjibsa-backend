@@ -8,12 +8,12 @@ import com.djs.dongjibsabackend.domain.entity.UserEntity;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Builder
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PostDto {
@@ -28,14 +28,16 @@ public class PostDto {
     private Integer peopleCount;
     private LocationEntity location;
 
-    private List<PostIngredientEntity> recipeIngredients;
+//    private List<PostIngredientEntity> recipeIngredients;
+    private List<PostIngredientDto> recipeIngredients;
     private String imgUrl;
     private Integer commentsCount;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    @Builder
     public PostDto(Long id, String title, String content, Integer expectingPrice, Integer pricePerOne, UserEntity user, Integer calorie,
-                   Integer peopleCount, LocationEntity location, List<PostIngredientEntity> recipeIngredients, String imgUrl,
+                   Integer peopleCount, LocationEntity location, List<PostIngredientDto> recipeIngredients, String imgUrl,
                    Integer commentsCount, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.title = title;
@@ -53,31 +55,30 @@ public class PostDto {
         this.updatedAt = updatedAt;
     }
 
-    public static PostDto toDto(PostEntity recipe) {
+    /*
+          엔터티 내 엔터티 리스트를 dto 리스트로 바꿔서 dto로 반환...
+     */
+    public static PostDto toDto(PostEntity post) {
+        // entity list 꺼내기
+        List<PostIngredientEntity> entities = post.getRecipeIngredients();
+
+        // entity list -> dto list
+        List<PostIngredientDto> postIngredientDtoList = entities.stream().map(PostIngredientDto::of).collect(Collectors.toList());
+
         return PostDto.builder()
-                      .id(recipe.getId())
-                      .title(recipe.getTitle())
-                      .content(recipe.getContent())
-                      .expectingPrice(recipe.getExpectingPrice())
-                      .pricePerOne(recipe.getPricePerOne())
-                      .user(recipe.getUser())
-                      .calorie(recipe.getCalorie())
-                      .peopleCount(recipe.getPeopleCount())
-                      .location(recipe.getLocation())
-                      .recipeIngredients(recipe.getRecipeIngredients())
-                      .imgUrl(recipe.getImgUrl())
-                      .createdAt(recipe.getCreatedAt())
-                      .updatedAt(recipe.getUpdatedAt())
+                      .id(post.getId())
+                      .title(post.getTitle())
+                      .content(post.getContent())
+                      .expectingPrice(post.getExpectingPrice())
+                      .pricePerOne(post.getPricePerOne())
+                      .user(post.getUser())
+                      .calorie(post.getCalorie())
+                      .peopleCount(post.getPeopleCount())
+                      .location(post.getLocation())
+                      .recipeIngredients(postIngredientDtoList)
+                      .imgUrl(post.getImgUrl())
+                      .createdAt(post.getCreatedAt())
+                      .updatedAt(post.getUpdatedAt())
                       .build();
-
-    }
-
-    public static List<PostIngredientDto> toDtoList(List<PostIngredientEntity> entityList) {
-        List<PostIngredientDto> dtoList = new ArrayList<>();
-        for (PostIngredientEntity entity: entityList) {
-            PostIngredientDto dto = PostIngredientDto.toDto(entity);
-            dtoList.add(dto);
-            }
-        return dtoList;
     }
 }
