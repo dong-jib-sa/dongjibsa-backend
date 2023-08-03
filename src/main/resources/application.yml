@@ -26,3 +26,14 @@ spring:
     level:
       root:
         DEBUG
+springdoc:
+  packages-to-scan: com.djs.dongjibsabackend.controller
+  default-consumes-media-type: application/json;charset=UTF-8 # 기본 요청 타입
+  default-produces-media-type: application/json;charset=UTF-8 # 기본 응답 타입
+
+  swagger-ui:
+    disable-swagger-default-url: true # 기본 경로 해제
+    path: /swagger-ui.html # 기본 경로로 설정
+    groups-order: desc
+    operations-sorter: method
+    display-request-duration: true # 요청 시간 표시
