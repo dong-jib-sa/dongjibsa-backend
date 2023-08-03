@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -89,4 +91,18 @@ public class PostService {
 
     // 조회
     // List<RecipeIngredientEntity> recipeIngredients = recipeIngredientRepository.findAllIngredientsByRecipeId() -> 조회 로직에 사용할 것
+    public Page<PostDto> searchByLocation(Pageable pageable, String dongName) {
+        // 동 이름으로 위치 객체 생성
+
+        log.debug("Path Variable로 받은 dongName은: ", dongName);
+
+        LocationEntity location = locationRepository.findLocationByDong(dongName);
+        Long locationId = location.getId();
+
+        // Recipe Page 객체 생성
+        Page<PostEntity> postEntityList = postRepository.findAllByLocationId(pageable, locationId);
+
+        return postEntityList.map(post -> PostDto.toDto(post));
+    }
+
 }
