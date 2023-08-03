@@ -32,7 +32,7 @@ public class UserEntity extends BaseEntity {
     private Integer totalSharingNum; // 모든 레시피의 나눔 수량 총합
 
     @JsonIgnore
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user")
     private List<PostEntity> postList = new ArrayList<>();
 
     @Builder

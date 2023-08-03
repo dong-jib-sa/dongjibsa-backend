@@ -1,8 +1,10 @@
 package com.djs.dongjibsabackend.service;
 
 import com.djs.dongjibsabackend.domain.dto.post.PostDto;
+import com.djs.dongjibsabackend.domain.dto.post.PostResponse;
 import com.djs.dongjibsabackend.domain.dto.post.WritePostRequest;
 import com.djs.dongjibsabackend.domain.dto.post_ingredient.PostIngredientDto;
+import com.djs.dongjibsabackend.domain.dto.post_ingredient.PostIngredientResponse;
 import com.djs.dongjibsabackend.domain.entity.IngredientEntity;
 import com.djs.dongjibsabackend.domain.entity.LocationEntity;
 import com.djs.dongjibsabackend.domain.entity.PostEntity;
@@ -17,8 +19,11 @@ import com.djs.dongjibsabackend.repository.PostRepository;
 import com.djs.dongjibsabackend.repository.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -89,4 +94,17 @@ public class PostService {
 
     // 조회
     // List<RecipeIngredientEntity> recipeIngredients = recipeIngredientRepository.findAllIngredientsByRecipeId() -> 조회 로직에 사용할 것
+    public Page<PostDto> searchByLocation(Pageable pageable, String dongName) {
+        // 동 이름으로 위치 객체 생성
+        LocationEntity location = locationRepository.findLocationByDong(dongName);
+        Long locationId = location.getId();
+
+        // Post Page List
+        Page<PostEntity> postEntityList = postRepository.findAllByLocationId(pageable, locationId);
+
+        Page<PostDto> postDtoList = postEntityList.map(PostDto::toDto);
+
+        return postDtoList;
+    }
+
 }
