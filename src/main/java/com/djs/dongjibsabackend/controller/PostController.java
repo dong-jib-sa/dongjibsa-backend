@@ -45,8 +45,10 @@ public class PostController {
         @PathVariable String keywords) {
         String dongName = keywords;
 
-        Page<PostDto> recipeDtoPage = postService.searchByLocation(pageable, dongName);
+        Page<PostDto> postDtoPage = postService.searchByLocation(pageable, dongName);
 
-        return Response.success(recipeDtoPage);
+        Page<PostResponse> postResponse = PostResponse.of(postDtoPage);
+
+        return Response.success(postResponse);
     }
 }
