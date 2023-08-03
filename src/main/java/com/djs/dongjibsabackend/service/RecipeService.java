@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -90,5 +92,15 @@ public class RecipeService {
     }
 
     // 조회
+    public Page<RecipeDto> searchByLocation (Pageable pageable, String dongName) {
+        // 동 이름으로 위치 객체 생성
+        LocationEntity location = locationRepository.findLocationByDong(dongName);
+        Long locationId = location.getId();
+
+        // Recipe Page 객체 생성
+        Page<RecipeEntity> recipeEntityList = recipeRepository.findAllByLocationId(pageable, locationId);
+
+        return recipeEntityList.map(recipe -> RecipeDto.toDto(recipe));
+    }
     // List<RecipeIngredientEntity> recipeIngredients = recipeIngredientRepository.findAllIngredientsByRecipeId() -> 조회 로직에 사용할 것
 }
