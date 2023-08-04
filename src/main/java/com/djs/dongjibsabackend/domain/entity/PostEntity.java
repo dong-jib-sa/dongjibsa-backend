@@ -39,7 +39,7 @@ public class PostEntity extends BaseEntity {
     @JoinColumn(name = "user_id")
     private UserEntity user;
 
-    private Integer calorie; // 1인분 칼로리
+    private double calorie; // 1인분 칼로리
     private Integer peopleCount; // 파티원 수
 
     @OneToOne
@@ -55,7 +55,7 @@ public class PostEntity extends BaseEntity {
     @Builder
     public PostEntity(Long id, String title, String content,
                       Integer expectingPrice, Integer pricePerOne,
-                      UserEntity user, Integer calorie, Integer peopleCount,
+                      UserEntity user, double calorie, Integer peopleCount,
                       LocationEntity location,
                       List<PostIngredientEntity> recipeIngredients,
                       String imgUrl) {
