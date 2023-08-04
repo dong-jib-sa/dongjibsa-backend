@@ -13,12 +13,12 @@ import lombok.NoArgsConstructor;
 public class PostIngredientResponse {
 
     private String ingredientName;
-    private Integer totalQty;
-    private Integer requiredQty;
-    private Integer sharingAvailableQty;
+    private double totalQty;
+    private double requiredQty;
+    private double sharingAvailableQty;
 
     @Builder
-    public PostIngredientResponse(String ingredientName, Integer totalQty, Integer requiredQty, Integer sharingAvailableQty) {
+    public PostIngredientResponse(String ingredientName, double totalQty, double requiredQty, double sharingAvailableQty) {
         this.ingredientName = ingredientName;
         this.totalQty = totalQty;
         this.requiredQty = requiredQty;

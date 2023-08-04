@@ -79,19 +79,19 @@ public class MyPageService {
                                                                                        //   [포스트2, 재료2, 나눔수량],
                                                                                        //   [포스트2, 재료3, 나눔수량]], ... }
         List<PostIngredientDto> postIngredientsList = new ArrayList<>();
-        List<Integer> sumOfSharingAvailableQtyPerPost = new ArrayList<>();
+        List<Double> sumOfSharingAvailableQtyPerPost = new ArrayList<>();
 
         // 게시글의 모든 재료의 총 나눔 건수의 총합
         for (Long postId: postIdList) {
             List<PostIngredientEntity> postIngredient = postIngredientRepository.findAllIngredientsByPostId(postId);
-            Integer sumOfSharingAvailableQty = postIngredient.stream().collect(reducing(0,
-                                                                                        PostIngredientEntity::getSharingAvailableQty,
-                                                                                        Integer::sum)); // 레시피 별 재료 나눔 건수의 총합
+            double sumOfSharingAvailableQty = postIngredient.stream()
+                                                            .map(PostIngredientEntity::getSharingAvailableQty)
+                                                            .collect(reducing(Double::sum)).get(); // 레시피 별 재료 나눔 건수의 총합
             sumOfSharingAvailableQtyPerPost.add(sumOfSharingAvailableQty);
         }
 
         // ------------------------ 총 나눔 건수 ------------------------
-        Integer sumOfSharingAvailableQtyPerUser = sumOfSharingAvailableQtyPerPost.stream().reduce(0, (a, b) -> a+b);
+        double sumOfSharingAvailableQtyPerUser = sumOfSharingAvailableQtyPerPost.stream().reduce((double) 0, (a, b) -> a+b);
 
 
 

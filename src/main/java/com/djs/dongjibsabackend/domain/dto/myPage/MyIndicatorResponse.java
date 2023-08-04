@@ -10,10 +10,10 @@ import lombok.NoArgsConstructor;
 public class MyIndicatorResponse {
 
     private double calorieAvg;
-    private Integer sumOfSharingAvailableQty;
+    private double sumOfSharingAvailableQty;
 
     @Builder
-    public MyIndicatorResponse(double calorieAvg, Integer sumOfSharingAvailableQty) {
+    public MyIndicatorResponse(double calorieAvg, double sumOfSharingAvailableQty) {
         this.calorieAvg = calorieAvg;
         this.sumOfSharingAvailableQty = sumOfSharingAvailableQty;
     }
