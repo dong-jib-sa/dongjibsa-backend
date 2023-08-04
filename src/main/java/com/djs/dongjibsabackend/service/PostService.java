@@ -44,7 +44,8 @@ public class PostService {
         LocationEntity validateLocation = locationRepository.findLocationByDong(writePostRequest.getDong());
 
         // 사용자가 입력한 이름으로 User 객체 생성
-        UserEntity validateUser = userRepository.findByUserName(writePostRequest.getUserName());
+        // UserEntity validateUser = userRepository.findByUserName(writePostRequest.getUserName());
+        UserEntity validateUser = userRepository.findByUserName("박보검");
 
         // RecipyIngredientEntity 리스트 생성
         List<PostIngredientEntity> ingredients = new ArrayList<>();
