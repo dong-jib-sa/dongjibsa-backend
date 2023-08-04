@@ -24,7 +24,7 @@ public class PostDto {
     private Integer expectingPrice;
     private Integer pricePerOne;
     private UserEntity user;
-    private Integer calorie;
+    private double calorie;
     private Integer peopleCount;
     private LocationEntity location;
 
@@ -36,7 +36,7 @@ public class PostDto {
     private LocalDateTime updatedAt;
 
     @Builder
-    public PostDto(Long id, String title, String content, Integer expectingPrice, Integer pricePerOne, UserEntity user, Integer calorie,
+    public PostDto(Long id, String title, String content, Integer expectingPrice, Integer pricePerOne, UserEntity user, double calorie,
                    Integer peopleCount, LocationEntity location, List<PostIngredientDto> recipeIngredients, String imgUrl,
                    Integer commentsCount, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
@@ -80,5 +80,15 @@ public class PostDto {
                       .createdAt(post.getCreatedAt())
                       .updatedAt(post.getUpdatedAt())
                       .build();
+    }
+
+    public static List<PostDto> toDtoList (List<PostEntity> entityList) {
+        List<PostDto> dtoList = new ArrayList<>();
+
+        for (PostEntity entity: entityList) {
+            PostDto dto = PostDto.toDto(entity);
+            dtoList.add(dto);
+        }
+        return dtoList;
     }
 }
