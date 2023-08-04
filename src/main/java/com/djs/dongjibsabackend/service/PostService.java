@@ -94,15 +94,15 @@ public class PostService {
 
     // 조회
     // List<RecipeIngredientEntity> recipeIngredients = recipeIngredientRepository.findAllIngredientsByRecipeId() -> 조회 로직에 사용할 것
-    public Page<PostDto> searchByLocation(Pageable pageable, String dongName) {
+    public List<PostDto> searchByLocation(String dongName) {
         // 동 이름으로 위치 객체 생성
         LocationEntity location = locationRepository.findLocationByDong(dongName);
         Long locationId = location.getId();
 
         // Post Page List
-        Page<PostEntity> postEntityList = postRepository.findAllByLocationId(pageable, locationId);
+        List<PostEntity> postEntityList = postRepository.findAllByLocationId(locationId);
 
-        Page<PostDto> postDtoList = postEntityList.map(PostDto::toDto);
+        List<PostDto> postDtoList = postEntityList.stream().map(PostDto::toDto).collect(Collectors.toList());
 
         return postDtoList;
     }
