@@ -20,19 +20,23 @@ public class MyPageController {
     private final MyPageService myPageService;
 
     // 마이페이지 평균 칼로리, 총 나눔 건수 조회
-    @GetMapping("/{userId}/indicator")
-    public Response getMyIndicator(@PathVariable Long userId) {
+    @GetMapping("/indicator")
+    // @GetMapping("/{userId}/indicator")
+    public Response getMyIndicator() {
 
-        MyIndicatorResponse myIndicatorResponse = myPageService.calculate(userId);
+        MyIndicatorResponse myIndicatorResponse = myPageService.calculate();
+        // MyIndicatorResponse myIndicatorResponse = myPageService.calculate(userId);
 
         return Response.success(myIndicatorResponse);
     }
 
     // 마이페이지 - 작성자의 모든 나눔 글 조회
-    @GetMapping("/{userId}/posts")
-    public List<PostResponse> getMyPostList(@PathVariable Long userId) {
+    @GetMapping("/posts")
+    // @GetMapping("/{userId}/posts")
+    public List<PostResponse> getMyPostList() {
 
-        List<PostDto> postDtoList = myPageService.getMyPostList(userId);
+        List<PostDto> postDtoList = myPageService.getMyPostList();
+        // List<PostDto> postDtoList = myPageService.getMyPostList(userId);
 
         List<PostResponse> postResponseList = PostResponse.of(postDtoList);
 

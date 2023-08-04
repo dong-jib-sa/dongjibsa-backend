@@ -33,9 +33,10 @@ public class MyPageService {
             () -> new AppException(ErrorCode.USER_NOT_FOUND, "존재하지 않는 사용자입니다."));
     }
 
-    public List<PostDto> getMyPostList(Long userId) {
+    // public List<PostDto> getMyPostList(Long userId) {
+    public List<PostDto> getMyPostList() {
         // 유저가 작성한 Post 리스트 객체 생성
-        List<PostEntity> postEntityList = postRepository.findAllByUserId(userId);
+        List<PostEntity> postEntityList = postRepository.findAllByUserId(3L);
 
         // PostDto 리스트로 변환
         List<PostDto> postDtoList = postEntityList.stream().map(PostDto::toDto).collect(Collectors.toList());
@@ -43,8 +44,9 @@ public class MyPageService {
         return postDtoList;
     }
 
-    public MyIndicatorResponse calculate(Long userId) {
-        UserEntity user = findUserById(userId); // 유저
+    // public MyIndicatorResponse calculate(Long userId) {
+    public MyIndicatorResponse calculate() {
+        UserEntity user = findUserById(3L); // 유저
         UserDto userDto = UserDto.toDto(user); // 유저 -> dto
 
         // 유저가 작성한 PostList
