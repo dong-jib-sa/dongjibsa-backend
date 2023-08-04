@@ -21,6 +21,7 @@ import com.djs.dongjibsabackend.repository.RecipeCalorieRepository;
 import com.djs.dongjibsabackend.repository.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -114,4 +115,11 @@ public class PostService {
         return postDtoList;
     }
 
+    // 게시글 상세조회
+    public PostDto getPostDetail(Long postId) {
+        PostEntity post = postRepository.findById(postId)
+                                        .orElseThrow(() -> new AppException(ErrorCode.POST_NOT_FOUND, "게시물이 존재하지 않습니다."));
+        PostDto postDto = PostDto.toDto(post);
+        return postDto;
+    }
 }

@@ -1,6 +1,7 @@
 package com.djs.dongjibsabackend.controller;
 
 import com.djs.dongjibsabackend.domain.dto.Response;
+import com.djs.dongjibsabackend.domain.dto.post.PostDetailResponse;
 import com.djs.dongjibsabackend.domain.dto.post.PostDto;
 import com.djs.dongjibsabackend.domain.dto.post.PostResponse;
 import com.djs.dongjibsabackend.domain.dto.post.WritePostRequest;
@@ -49,6 +50,13 @@ public class PostController {
 
         List<PostResponse> postResponse = PostResponse.of(postDtoList);
 
+        return postResponse;
+    }
+
+    @GetMapping("/{keywords}/{postId}")
+    public PostDetailResponse getRecipeDetail(@PathVariable Long postId) {
+        PostDto postDto = postService.getPostDetail(postId);
+        PostDetailResponse postResponse = PostDetailResponse.of(postDto);
         return postResponse;
     }
 }
