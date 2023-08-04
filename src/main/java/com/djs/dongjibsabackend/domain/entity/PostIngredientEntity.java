@@ -34,15 +34,15 @@ public class PostIngredientEntity {
     @JoinColumn(name = "ingredient_id")
     private IngredientEntity ingredient;
 
-    private Integer totalQty; // 구매 수량
-    private Integer requiredQty; // 필요 수량
-    private Integer sharingAvailableQty; // 나눔 수량
+    private double totalQty; // 구매 수량
+    private double requiredQty; // 필요 수량
+    private double sharingAvailableQty; // 나눔 수량
 
     // == builder 패턴을 사용한 생성 메서드 == //
     @Builder
     public PostIngredientEntity(PostEntity post, IngredientEntity ingredient,
-                                Integer totalQty, Integer requiredQty,
-                                Integer sharingAvailableQty) {
+                                double totalQty, double requiredQty,
+                                double sharingAvailableQty) {
         this.post = post;
         this.ingredient = ingredient;
         this.totalQty = totalQty;
@@ -51,10 +51,10 @@ public class PostIngredientEntity {
     }
 
     public static PostIngredientEntity addIngredientToPost (PostEntity post,
-                                                             IngredientEntity ingredient,
-                                                             Integer totalQty,
-                                                             Integer requiredQty,
-                                                             Integer sharingAvailableQty) {
+                                                            IngredientEntity ingredient,
+                                                            double totalQty,
+                                                            double requiredQty,
+                                                            double sharingAvailableQty) {
         return PostIngredientEntity.builder()
                                    .post(post)
                                    .ingredient(ingredient)
