@@ -61,7 +61,7 @@ public class MyPageService {
         List<Double> calories = new ArrayList<>();
 
         for (PostDto postDto : postDtoList) {
-            double calorie = postDto.getCalorie();
+            double calorie = postDto.getRecipeCalorie().getCalorie();
             calories.add(calorie); // {칼로리1, 칼로리2, 칼로리3, ...}
             postIdList.add(postDto.getId()); // {1, 2, 3, 4, ...}
         }

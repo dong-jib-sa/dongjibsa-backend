@@ -1,9 +1,11 @@
 package com.djs.dongjibsabackend.domain.dto.post;
 
 import com.djs.dongjibsabackend.domain.dto.post_ingredient.PostIngredientDto;
+import com.djs.dongjibsabackend.domain.dto.recipe_calorie.RecipeCalorieDto;
 import com.djs.dongjibsabackend.domain.entity.LocationEntity;
 import com.djs.dongjibsabackend.domain.entity.PostEntity;
 import com.djs.dongjibsabackend.domain.entity.PostIngredientEntity;
+import com.djs.dongjibsabackend.domain.entity.RecipeCalorieEntity;
 import com.djs.dongjibsabackend.domain.entity.UserEntity;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -24,11 +26,9 @@ public class PostDto {
     private Integer expectingPrice;
     private Integer pricePerOne;
     private UserEntity user;
-    private double calorie;
+    private RecipeCalorieDto recipeCalorie;
     private Integer peopleCount;
     private LocationEntity location;
-
-//    private List<PostIngredientEntity> recipeIngredients;
     private List<PostIngredientDto> recipeIngredients;
     private String imgUrl;
     private Integer commentsCount;
@@ -36,16 +36,17 @@ public class PostDto {
     private LocalDateTime updatedAt;
 
     @Builder
-    public PostDto(Long id, String title, String content, Integer expectingPrice, Integer pricePerOne, UserEntity user, double calorie,
-                   Integer peopleCount, LocationEntity location, List<PostIngredientDto> recipeIngredients, String imgUrl,
-                   Integer commentsCount, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public PostDto (Long id, String title, String content, Integer expectingPrice, Integer pricePerOne, UserEntity user,
+                    RecipeCalorieDto recipeCalorie, Integer peopleCount, LocationEntity location,
+                    List<PostIngredientDto> recipeIngredients, String imgUrl,
+                    Integer commentsCount, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.title = title;
         this.content = content;
         this.expectingPrice = expectingPrice;
         this.pricePerOne = pricePerOne;
         this.user = user;
-        this.calorie = calorie;
+        this.recipeCalorie = recipeCalorie;
         this.peopleCount = peopleCount;
         this.location = location;
         this.recipeIngredients = recipeIngredients;
@@ -58,12 +59,14 @@ public class PostDto {
     /*
           엔터티 내 엔터티 리스트를 dto 리스트로 바꿔서 dto로 반환...
      */
-    public static PostDto toDto(PostEntity post) {
+    public static PostDto toDto (PostEntity post) {
         // entity list 꺼내기
         List<PostIngredientEntity> entities = post.getRecipeIngredients();
 
         // entity list -> dto list
         List<PostIngredientDto> postIngredientDtoList = entities.stream().map(PostIngredientDto::of).collect(Collectors.toList());
+
+        RecipeCalorieDto recipeCalorieDto = RecipeCalorieDto.of((post.getRecipeCalorie()));
 
         return PostDto.builder()
                       .id(post.getId())
@@ -72,7 +75,7 @@ public class PostDto {
                       .expectingPrice(post.getExpectingPrice())
                       .pricePerOne(post.getPricePerOne())
                       .user(post.getUser())
-                      .calorie(post.getCalorie())
+                      .recipeCalorie(recipeCalorieDto)
                       .peopleCount(post.getPeopleCount())
                       .location(post.getLocation())
                       .recipeIngredients(postIngredientDtoList)
