@@ -6,6 +6,7 @@ import com.djs.dongjibsabackend.domain.dto.myPage.MyIndicatorResponse;
 import com.djs.dongjibsabackend.domain.dto.post.PostDto;
 import com.djs.dongjibsabackend.domain.dto.post_ingredient.PostIngredientDto;
 import com.djs.dongjibsabackend.domain.dto.user.UserDto;
+import com.djs.dongjibsabackend.domain.entity.PostEntity;
 import com.djs.dongjibsabackend.domain.entity.PostIngredientEntity;
 import com.djs.dongjibsabackend.domain.entity.UserEntity;
 import com.djs.dongjibsabackend.exception.AppException;
@@ -30,6 +31,16 @@ public class MyPageService {
     public UserEntity findUserById(Long userId) {
         return userRepository.findById(userId).orElseThrow(
             () -> new AppException(ErrorCode.USER_NOT_FOUND, "존재하지 않는 사용자입니다."));
+    }
+
+    public List<PostDto> getMyPostList(Long userId) {
+        // 유저가 작성한 Post 리스트 객체 생성
+        List<PostEntity> postEntityList = postRepository.findAllByUserId(userId);
+
+        // PostDto 리스트로 변환
+        List<PostDto> postDtoList = postEntityList.stream().map(PostDto::toDto).collect(Collectors.toList());
+
+        return postDtoList;
     }
 
     public MyIndicatorResponse calculate(Long userId) {
