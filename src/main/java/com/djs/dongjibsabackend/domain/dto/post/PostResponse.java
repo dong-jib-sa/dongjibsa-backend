@@ -24,7 +24,7 @@ public class PostResponse {
     private Integer expectingPrice;
     private Integer pricePerOne;
     private String userName; // 작성자 이름
-    private Integer calorie;
+    private double calorie;
     private Integer peopleCount;
     private List<PostIngredientResponse> recipeIngredients; //List<PostIngredientDto>로 타입 변경
     // private LocationEntity locationName; // LocationDto로 타입 변경
