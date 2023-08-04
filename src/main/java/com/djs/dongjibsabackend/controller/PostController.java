@@ -6,6 +6,7 @@ import com.djs.dongjibsabackend.domain.dto.post.PostResponse;
 import com.djs.dongjibsabackend.domain.dto.post.WritePostRequest;
 import com.djs.dongjibsabackend.service.PostService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -38,17 +39,16 @@ public class PostController {
         return Response.success(postDto);
     }
 
-    // 2. 지역별 게시글 전체 조회
+    // 지역별 게시글 전체 조회 (To - Be)
     @GetMapping("/{keywords}")
-    public Response<Page<PostResponse>> getAllRecipes(
-        @PageableDefault(size = 20, sort = "id", direction = Direction.ASC) Pageable pageable,
+    public List<PostResponse> getAllRecipes(
         @PathVariable String keywords) {
         String dongName = keywords;
 
-        Page<PostDto> postDtoPage = postService.searchByLocation(pageable, dongName);
+        List<PostDto> postDtoList = postService.searchByLocation(dongName);
 
-        Page<PostResponse> postResponse = PostResponse.of(postDtoPage);
+        List<PostResponse> postResponse = PostResponse.of(postDtoList);
 
-        return Response.success(postResponse);
+        return postResponse;
     }
 }

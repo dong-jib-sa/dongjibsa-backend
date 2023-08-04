@@ -72,4 +72,20 @@ public class PostResponse {
                                              .build());
     }
 
+    // 리스트로 반환하는 메서드
+    public static List<PostResponse> of(List<PostDto> posts) {
+
+        return posts.stream().map(post -> PostResponse.builder()
+                                             .title(post.getTitle())
+                                             .content(post.getContent())
+                                             .expectingPrice(post.getExpectingPrice())
+                                             .pricePerOne(post.getPricePerOne())
+                                             .userName(post.getUser().getUserName())
+                                             .calorie(post.getCalorie())
+                                             .peopleCount(post.getPeopleCount())
+                                             .recipeIngredients(PostIngredientResponse.of(post.getRecipeIngredients()))
+                                             .imgUrl(post.getImgUrl())
+                                             .build()).collect(Collectors.toList());
+    }
+
 }
