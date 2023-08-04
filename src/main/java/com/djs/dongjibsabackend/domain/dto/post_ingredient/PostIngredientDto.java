@@ -16,13 +16,13 @@ public class PostIngredientDto {
     private Long postId; // Post Entity
     private Long ingredientId; // Ingredient Entity
     private String ingredientName; // 재료명
-    private Integer totalQty;
-    private Integer requiredQty;
-    private Integer sharingAvailableQty;
+    private double totalQty;
+    private double requiredQty;
+    private double sharingAvailableQty;
 
     @Builder
-    public PostIngredientDto(Long id, Long postId, Long ingredientId, String ingredientName, Integer totalQty, Integer requiredQty,
-                             Integer sharingAvailableQty) {
+    public PostIngredientDto(Long id, Long postId, Long ingredientId, String ingredientName, double totalQty, double requiredQty,
+                             double sharingAvailableQty) {
         this.id = id;
         this.postId = postId;
         this.ingredientId = ingredientId;
