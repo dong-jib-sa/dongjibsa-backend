@@ -9,6 +9,7 @@ import com.djs.dongjibsabackend.domain.entity.IngredientEntity;
 import com.djs.dongjibsabackend.domain.entity.LocationEntity;
 import com.djs.dongjibsabackend.domain.entity.PostEntity;
 import com.djs.dongjibsabackend.domain.entity.PostIngredientEntity;
+import com.djs.dongjibsabackend.domain.entity.RecipeCalorieEntity;
 import com.djs.dongjibsabackend.domain.entity.UserEntity;
 import com.djs.dongjibsabackend.exception.AppException;
 import com.djs.dongjibsabackend.exception.ErrorCode;
@@ -16,6 +17,7 @@ import com.djs.dongjibsabackend.repository.IngredientRepository;
 import com.djs.dongjibsabackend.repository.LocationRepository;
 import com.djs.dongjibsabackend.repository.PostIngredientRepository;
 import com.djs.dongjibsabackend.repository.PostRepository;
+import com.djs.dongjibsabackend.repository.RecipeCalorieRepository;
 import com.djs.dongjibsabackend.repository.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +38,7 @@ public class PostService {
     private final LocationRepository locationRepository;
     private final PostIngredientRepository postIngredientRepository;
     private final IngredientRepository ingredientRepository;
+    private final RecipeCalorieRepository recipeCalorieRepository;
 
     // 여러 가지 재료 등록 기능 추가하기
     public PostDto register(WritePostRequest writePostRequest) {
@@ -50,6 +53,10 @@ public class PostService {
         // RecipyIngredientEntity 리스트 생성
         List<PostIngredientEntity> ingredients = new ArrayList<>();
 
+        // 입력 받은 레시피 이름으로 recpiecalorie 엔티티 생성
+        String recipeName = writePostRequest.getRecipeName();
+        RecipeCalorieEntity recipeCalorieEntity = recipeCalorieRepository.findByRecipeName(recipeName);
+
         // 레시피 엔터티 생성
         PostEntity savedPost = PostEntity.builder()
                                            .title(writePostRequest.getTitle())
@@ -57,10 +64,9 @@ public class PostService {
                                            .expectingPrice(writePostRequest.getExpectingPrice())
                                            .pricePerOne(writePostRequest.getPricePerOne())
                                            .user(validateUser)
-//                                           .calorie(writePostRequest.getCalorie())
+                                           .recipeCalorie(recipeCalorieEntity)
                                            .peopleCount(writePostRequest.getPeopleCount())
                                            .location(validateLocation)
-//                                               .recipeIngredients(ingredients) // 빈 객체
                                            .imgUrl(writePostRequest.getImgUrl())
                                            .build();
 
@@ -86,7 +92,7 @@ public class PostService {
 
         savedPost.updatePostIngredients(ingredients);
 
-        postRepository.save(savedPost);
+        postRepository.save(savedPost); // db에 저장
 
         PostDto savedPostDto = PostDto.toDto(savedPost);
 
