@@ -6,6 +6,7 @@ import com.djs.dongjibsabackend.service.PostImageService;
 import com.djs.dongjibsabackend.service.PostService;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,7 +24,8 @@ public class PostImageController {
     private final PostService postService;
     private final PostImageService postImageService;
 
-    @PostMapping(path = "/{postId}/uploadImage", consumes = {"multipart/form-data"}, headers = ("content-type=multipart/*"))
+    @PostMapping(path = "/{postId}/uploadImage",
+        consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE}, headers = ("content-type=multipart/*"))
     @ResponseBody
     public Response<String> uploadRecipeImage (
         @RequestParam("image") MultipartFile multipartFile,
