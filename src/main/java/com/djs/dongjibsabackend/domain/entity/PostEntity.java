@@ -1,6 +1,9 @@
 package com.djs.dongjibsabackend.domain.entity;
 
 
+import com.djs.dongjibsabackend.domain.dto.post.PostDto;
+import com.djs.dongjibsabackend.exception.AppException;
+import com.djs.dongjibsabackend.exception.ErrorCode;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -77,9 +80,12 @@ public class PostEntity extends BaseEntity {
     }
 
     // --- 연관 관계 메서드 --- //
-
-
     public void updatePostIngredients(List<PostIngredientEntity> recipeIngredients) {
         this.recipeIngredients = recipeIngredients;
+    }
+
+    // --- 이미지 url 업데이트 메서드 --- //
+    public void updatePostImageUrl(String s3FileUrl) {
+        this.imgUrl = s3FileUrl;
     }
 }
