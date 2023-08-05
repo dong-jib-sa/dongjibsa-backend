@@ -22,7 +22,10 @@ public enum ErrorCode {
     // Post ErrorCodes
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "Post Not Exist."),
 
-    ;
+    // Image ErrorCodes
+    WRONG_FILE_FORMAT(HttpStatus.BAD_REQUEST, "Wrong File Format."),
+
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Error Occurs.");
 
 
 
