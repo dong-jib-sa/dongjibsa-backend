@@ -40,7 +40,7 @@ public class PostImageService {
         return post;
     }
 
-    public String uploadAndSaveToDB(MultipartFile multipartFile, Long postId) throws MissingServletRequestPartException {
+    public PostDto uploadAndSaveToDB(MultipartFile multipartFile, Long postId) throws MissingServletRequestPartException {
 
         // 파일 검증
         if (multipartFile.isEmpty()) {
@@ -86,14 +86,17 @@ public class PostImageService {
 //        String imageUrl = amazonS3Client.getResourceUrl(s3DirName, key);
 //        String fileUrl = "https://" + bucket + key;
         String imageUrl = amazonS3Client.getUrl(bucket, key).toString();
+        log.debug("imageUrl: ", imageUrl);
 
         PostEntity post = validatePost(postId);
 
         post.updatePostImageUrl(imageUrl);
 
         // db에 저장
-        postRepository.save(post);
+        PostEntity imageSavedPostEntity = postRepository.save(post);
 
-        return imageUrl;
+        PostDto imageSavedPostDto = PostDto.toDto(imageSavedPostEntity);
+
+        return imageSavedPostDto;
     }
 }
