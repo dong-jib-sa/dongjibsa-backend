@@ -86,7 +86,8 @@ public class MyPageService {
             List<PostIngredientEntity> postIngredient = postIngredientRepository.findAllIngredientsByPostId(postId);
             double sumOfSharingAvailableQty = postIngredient.stream()
                                                             .map(PostIngredientEntity::getSharingAvailableQty)
-                                                            .collect(reducing(Double::sum)).get(); // 레시피 별 재료 나눔 건수의 총합
+                                                                .reduce((double) 0, (a, b) -> a+b);
+//                                                            .collect(reducing(Double::sum)).get(); // 레시피 별 재료 나눔 건수의 총합
             sumOfSharingAvailableQtyPerPost.add(sumOfSharingAvailableQty);
         }
 
