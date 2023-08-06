@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -48,15 +49,15 @@ public class PostController {
 //    }
     // 1. 게시글 작성
     @PostMapping(path = "/new",
-        consumes = {"multipart/form-data"}, headers = ("content-type=multipart/*"))
+        consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE},
+        headers = ("content-type=multipart/*"))
     public Response registerPost(@RequestPart WritePostRequest writePostRequest,
                                  @RequestParam("image") MultipartFile multipartFile) throws IOException, MissingServletRequestPartException {
 
         PostDto postDto = postService.register(writePostRequest);
-        postImageService.uploadAndSaveToDB(multipartFile, postDto.getId());
+        PostDto imageSavedPostDto = postImageService.uploadAndSaveToDB(multipartFile, postDto.getId());
 
-
-        return Response.success(postDto);
+        return Response.success(imageSavedPostDto);
     }
 
     // 지역별 게시글 전체 조회 (To - Be)

@@ -24,17 +24,17 @@ public class PostImageController {
     private final PostService postService;
     private final PostImageService postImageService;
 
-    @PostMapping(path = "/{postId}/uploadImage",
-        consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE},
-        headers = ("content-type=multipart/*"))
-//    @ResponseBody
-    public Response<String> uploadRecipeImage (
-        @RequestParam("image") MultipartFile multipartFile,
-        @PathVariable Long postId) throws IOException, MissingServletRequestPartException {
-
-        String fileUrl = postImageService.uploadAndSaveToDB(multipartFile, postId);
-
-        return Response.success(fileUrl);
-    }
+//    @PostMapping(path = "/{postId}/uploadImage",
+//        consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE},
+//        headers = ("content-type=multipart/*"))
+////    @ResponseBody
+//    public Response<String> uploadRecipeImage (
+//        @RequestParam("image") MultipartFile multipartFile,
+//        @PathVariable Long postId) throws IOException, MissingServletRequestPartException {
+//
+//        String fileUrl = postImageService.uploadAndSaveToDB(multipartFile, postId);
+//
+//        return Response.success(fileUrl);
+//    }
 
 }
