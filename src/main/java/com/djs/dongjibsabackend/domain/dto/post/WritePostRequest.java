@@ -19,15 +19,15 @@ import lombok.Setter;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class WritePostRequest {
 
-    String title; // 글 제목
-    String userName; // 작성자 이름
-    String recipeName; // 레시피 이름
-    Integer expectingPrice; // 예상 가격
-    Integer pricePerOne; // 1인 당 예상 가격
-    Integer peopleCount; // 파티원 수
-    String dong; // 위치 dto
-    List<PostIngredientRequest> ingredients; // 게시글 재료 목록
-    String content; // 내용
+    private String title; // 글 제목
+    private String userName; // 작성자 이름
+    private String recipeName; // 레시피 이름
+    private Integer expectingPrice; // 예상 가격
+    private Integer pricePerOne; // 1인 당 예상 가격
+    private Integer peopleCount; // 파티원 수
+    private String dong; // 위치 dto
+    private List<PostIngredientRequest> ingredients; // 게시글 재료 목록
+    private String content; // 내용
 
 
     @Builder

@@ -46,23 +46,16 @@ public class PostService {
     private final RecipeCalorieRepository recipeCalorieRepository;
     private final PostImageService postImageService;
 
-    public PostDto register (WritePostRequest req, MultipartFile img) throws MissingServletRequestPartException {
+    public PostDto register (RegisterPostRequest req) throws MissingServletRequestPartException {
 
-        // WritePostRequest writePostRequest = req.getWritePostRequest();
-
-        // 동 이름을 기준으로 Location 객체 생성
         LocationEntity validateLocation = locationRepository.findLocationByDong(req.getDong());
 
-        // 사용자가 입력한 이름으로 User 객체 생성
         UserEntity validateUser = userRepository.findByUserName("지예로운사람");
 
-        // RecipeIngredientEntity 리스트 생성
         List<PostIngredientEntity> ingredients = new ArrayList<>();
 
-            // 입력 받은 레시피 이름으로 recpiecalorie 엔티티 생성
         RecipeCalorieEntity recipeCalorieEntity = recipeCalorieRepository.findByRecipeName(req.getRecipeName());
 
-            // 레시피 엔터티 생성
         PostEntity savedPost = PostEntity.builder()
                                            .title(req.getTitle())
                                            .content(req.getContent())
@@ -74,12 +67,9 @@ public class PostService {
                                            .location(validateLocation)
                                            .build();
 
-        // 재료 리스트 추출
         List<PostIngredientRequest> dtos = req.getIngredients();
 
-        // 리스트를 순회하며 레시피 재료 리스트를 채운다.
         for (PostIngredientRequest ingredient: dtos) {
-            // 재료명으로 재료 코드 조회
             IngredientEntity ingredientEntity = ingredientRepository.findByIngredientName(ingredient.getIngredientName())
                 .orElseThrow(() -> new AppException(ErrorCode.INGREDIENT_NOT_AVAILABLE, "해당 재료는 입력할 수 없습니다."));
 
@@ -97,7 +87,7 @@ public class PostService {
         // 재료 목록 저장
         savedPost.updatePostIngredients(ingredients);
 
-        String imgUrl = postImageService.uploadAndSaveToDB(img, savedPost.getId());
+        String imgUrl = postImageService.uploadAndSaveToDB(req.getImage(), savedPost.getId());
 
         savedPost.updatePostImageUrl(imgUrl);
 

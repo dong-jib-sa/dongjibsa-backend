@@ -48,11 +48,7 @@ public class PostController {
     )
     public Response registerPost(@ModelAttribute RegisterPostRequest req) throws IOException, MissingServletRequestPartException {
 
-        WritePostRequest writePostRequest = req.getWritePostRequest();
-
-        MultipartFile recipeImage = req.getImage();
-
-        PostDto postDto = postService.register(writePostRequest, recipeImage);
+        PostDto postDto = postService.register(req);
 
         log.info("등록된 게시글 ID:" + postDto.getId());
 
