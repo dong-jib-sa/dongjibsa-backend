@@ -171,11 +171,10 @@ public class PostService {
     // 조회
     // List<RecipeIngredientEntity> recipeIngredients = recipeIngredientRepository.findAllIngredientsByRecipeId() -> 조회 로직에 사용할 것
     public List<PostDto> searchByLocation(String dongName) {
-        // 동 이름으로 위치 객체 생성
         LocationEntity location = locationRepository.findLocationByDong(dongName);
+
         Long locationId = location.getId();
 
-        // Post Page List
         List<PostEntity> postEntityList = postRepository.findAllByLocationId(locationId);
 
         List<PostDto> postDtoList = postEntityList.stream().map(PostDto::toDto).collect(Collectors.toList());
