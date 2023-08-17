@@ -87,16 +87,27 @@ public class PostService {
         // 재료 목록 저장
         savedPost.updatePostIngredients(ingredients);
 
-        String imgUrl = postImageService.uploadAndSaveToDB(req.getImage(), savedPost.getId());
+        if (req.getImage() != null) {
 
-        savedPost.updatePostImageUrl(imgUrl);
+            String imgUrl = postImageService.uploadAndSaveToDB(req.getImage(), savedPost.getId());
 
-        postRepository.save(savedPost);
+            savedPost.updatePostImageUrl(imgUrl);
 
-        // entity -> dto
-        PostDto savedPostDto = PostDto.toDto(savedPost);
+            postRepository.save(savedPost);
 
-        return savedPostDto;
+            // entity -> dto
+            PostDto savedPostDto = PostDto.toDto(savedPost);
+
+            return savedPostDto;
+
+        } else {
+
+            postRepository.save(savedPost);
+
+            PostDto savedPostDto = PostDto.toDto(savedPost);
+
+            return savedPostDto;
+        }
     }
 
 //    public PostDto register(WritePostRequest writePostRequest) {
@@ -160,11 +171,10 @@ public class PostService {
     // 조회
     // List<RecipeIngredientEntity> recipeIngredients = recipeIngredientRepository.findAllIngredientsByRecipeId() -> 조회 로직에 사용할 것
     public List<PostDto> searchByLocation(String dongName) {
-        // 동 이름으로 위치 객체 생성
         LocationEntity location = locationRepository.findLocationByDong(dongName);
+
         Long locationId = location.getId();
 
-        // Post Page List
         List<PostEntity> postEntityList = postRepository.findAllByLocationId(locationId);
 
         List<PostDto> postDtoList = postEntityList.stream().map(PostDto::toDto).collect(Collectors.toList());

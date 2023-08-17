@@ -5,6 +5,9 @@ import com.djs.dongjibsabackend.domain.dto.post_ingredient.PostIngredientRespons
 import com.djs.dongjibsabackend.domain.dto.recipe_calorie.RecipeCalorieDto;
 import com.djs.dongjibsabackend.domain.entity.LocationEntity;
 import com.djs.dongjibsabackend.domain.entity.PostIngredientEntity;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonFormat.Shape;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AccessLevel;
@@ -20,6 +23,7 @@ import org.springframework.data.domain.Page;
 @NoArgsConstructor
 public class PostResponse {
 
+    private Long id;
     private String title;
     private String content;
     private Integer expectingPrice;
@@ -30,11 +34,10 @@ public class PostResponse {
     private List<PostIngredientResponse> recipeIngredients; //List<PostIngredientDto>로 타입 변경
     private Integer commentsCount;
     private String imgUrl;
-    // private LocationEntity locationName; // LocationDto로 타입 변경
-    // private String locationName;
-
-
-
+    @JsonFormat(shape = Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
+    private LocalDateTime createdAt;
+    @JsonFormat(shape = Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
+    private LocalDateTime updatedAt;
 
     // - of (레시피 재료 dto를 받아서 response 객체로 만드는 메소드 작성하기)
     public static PostResponse of(PostDto postDto) {
@@ -47,6 +50,7 @@ public class PostResponse {
         double calorie = postDto.getRecipeCalorie().getCalorie();
 
         return PostResponse.builder()
+                           .id(postDto.getId())
                            .title(postDto.getTitle())
                            .content(postDto.getContent())
                            .expectingPrice(postDto.getExpectingPrice())
@@ -56,6 +60,8 @@ public class PostResponse {
                            .peopleCount(postDto.getPeopleCount())
                            .recipeIngredients(ingredientResponse)
                            .imgUrl(postDto.getImgUrl())
+                           .createdAt(postDto.getCreatedAt())
+                           .updatedAt(postDto.getUpdatedAt())
                            .build();
     }
 
@@ -63,6 +69,7 @@ public class PostResponse {
     public static List<PostResponse> of(List<PostDto> posts) {
 
         return posts.stream().map(post -> PostResponse.builder()
+                                             .id(post.getId())
                                              .title(post.getTitle())
                                              .content(post.getContent())
                                              .expectingPrice(post.getExpectingPrice())
@@ -72,7 +79,9 @@ public class PostResponse {
                                              .peopleCount(post.getPeopleCount())
                                              .recipeIngredients(PostIngredientResponse.of(post.getRecipeIngredients()))
                                              .imgUrl(post.getImgUrl())
-                                             .build()).collect(Collectors.toList());
+                                             .createdAt(post.getCreatedAt())
+                                             .updatedAt(post.getUpdatedAt())
+                                                      .build()).collect(Collectors.toList());
     }
 
     // ---------------------------- 미사용 메서드 ----------------------------
