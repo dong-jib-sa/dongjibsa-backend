@@ -1,6 +1,7 @@
 package com.djs.dongjibsabackend.domain.dto.post;
 
 import com.djs.dongjibsabackend.domain.dto.post_ingredient.PostIngredientDto;
+import com.djs.dongjibsabackend.domain.dto.post_ingredient.PostIngredientRequest;
 import com.djs.dongjibsabackend.domain.entity.LocationEntity;
 import com.djs.dongjibsabackend.domain.entity.PostEntity;
 import com.djs.dongjibsabackend.domain.entity.PostIngredientEntity;
@@ -11,21 +12,22 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class WritePostRequest {
 
-    private String title; // 글 제목
-    private String recipeName; // 레시피 이름
-    private String content; // 내용
-    private String userName; // 작성자 이름
-    private Integer expectingPrice; // 예상 가격
-    private Integer pricePerOne; // 1인 당 예상 가격
-    private Integer peopleCount; // 파티원 수
-    private String dong; // 위치 dto
-    private List<PostIngredientDto> postIngredientDtos; // 게시글 재료 목록
-    private String imgUrl;
+    String title; // 글 제목
+    String userName; // 작성자 이름
+    String recipeName; // 레시피 이름
+    Integer expectingPrice; // 예상 가격
+    Integer pricePerOne; // 1인 당 예상 가격
+    Integer peopleCount; // 파티원 수
+    String dong; // 위치 dto
+    List<PostIngredientRequest> ingredients; // 게시글 재료 목록
+    String content; // 내용
 
 
     @Builder
@@ -38,7 +40,6 @@ public class WritePostRequest {
         this.pricePerOne = pricePerOne;
         this.recipeName = recipeName;
         this.peopleCount = peopleCount;
-        this.imgUrl = imgUrl;
     }
 
     public PostEntity toEntity(UserEntity user,
@@ -55,7 +56,6 @@ public class WritePostRequest {
                          .peopleCount(this.peopleCount)
                          .location(location)
                          .recipeIngredients(recipeIngredients)
-                         .imgUrl(this.imgUrl)
                          .build();
     }
 }
