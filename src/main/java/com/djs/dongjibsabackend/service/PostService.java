@@ -87,16 +87,27 @@ public class PostService {
         // 재료 목록 저장
         savedPost.updatePostIngredients(ingredients);
 
-        String imgUrl = postImageService.uploadAndSaveToDB(req.getImage(), savedPost.getId());
+        if (req.getImage() != null) {
 
-        savedPost.updatePostImageUrl(imgUrl);
+            String imgUrl = postImageService.uploadAndSaveToDB(req.getImage(), savedPost.getId());
 
-        postRepository.save(savedPost);
+            savedPost.updatePostImageUrl(imgUrl);
 
-        // entity -> dto
-        PostDto savedPostDto = PostDto.toDto(savedPost);
+            postRepository.save(savedPost);
 
-        return savedPostDto;
+            // entity -> dto
+            PostDto savedPostDto = PostDto.toDto(savedPost);
+
+            return savedPostDto;
+
+        } else {
+
+            postRepository.save(savedPost);
+
+            PostDto savedPostDto = PostDto.toDto(savedPost);
+
+            return savedPostDto;
+        }
     }
 
 //    public PostDto register(WritePostRequest writePostRequest) {
