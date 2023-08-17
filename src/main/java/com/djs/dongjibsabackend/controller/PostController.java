@@ -4,7 +4,9 @@ import com.djs.dongjibsabackend.domain.dto.Response;
 import com.djs.dongjibsabackend.domain.dto.post.PostDetailResponse;
 import com.djs.dongjibsabackend.domain.dto.post.PostDto;
 import com.djs.dongjibsabackend.domain.dto.post.PostResponse;
+import com.djs.dongjibsabackend.domain.dto.post.RegisterPostRequest;
 import com.djs.dongjibsabackend.domain.dto.post.WritePostRequest;
+import com.djs.dongjibsabackend.repository.PostRepository;
 import com.djs.dongjibsabackend.service.PostImageService;
 import com.djs.dongjibsabackend.service.PostService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,6 +20,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,30 +38,34 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 @Slf4j
 public class PostController {
 
-    // service 주입
     private final PostService postService;
-    private final PostImageService postImageService;
+    private final PostRepository postRepository;
 
-//    // 1. 게시글 작성
-//    @PostMapping("/new")
-//    public Response registerPost(@RequestBody WritePostRequest writePostRequest) {
-//
-//        PostDto postDto = postService.register(writePostRequest);
-//
-//        return Response.success(postDto);
-//    }
     // 1. 게시글 작성
     @PostMapping(path = "/new",
-        consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE},
-        headers = ("content-type=multipart/*"))
-    public Response registerPost(@RequestPart WritePostRequest writePostRequest,
-                                 @RequestParam("image") MultipartFile multipartFile) throws IOException, MissingServletRequestPartException {
+        consumes = {"multipart/form-data"}
+        ,headers = ("content-type=multipart/*")
+    )
+    public Response registerPost(@ModelAttribute RegisterPostRequest req) throws IOException, MissingServletRequestPartException {
 
-        PostDto postDto = postService.register(writePostRequest);
-        PostDto imageSavedPostDto = postImageService.uploadAndSaveToDB(multipartFile, postDto.getId());
+        PostDto postDto = postService.register(req);
 
-        return Response.success(imageSavedPostDto);
+        log.info("등록된 게시글 ID:" + postDto.getId());
+
+        return Response.success(postDto);
     }
+
+//    @PostMapping(path = "/new",
+//        consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE},
+//        headers = ("content-type=multipart/*"))
+//    public Response registerPost(@RequestPart WritePostRequest writePostRequest,
+//                                 @RequestParam("image") MultipartFile multipartFile) throws IOException, MissingServletRequestPartException {
+//
+//        PostDto postDto = postService.register(writePostRequest);
+//        PostDto imageSavedPostDto = postImageService.uploadAndSaveToDB(multipartFile, postDto.getId());
+//
+//        return Response.success(imageSavedPostDto);
+//    }
 
     // 지역별 게시글 전체 조회 (To - Be)
     @GetMapping("/{keywords}")
