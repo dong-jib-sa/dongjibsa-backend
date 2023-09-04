@@ -26,6 +26,7 @@ public class UserEntity extends BaseEntity {
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String phoneNumber;
     private String userName;
     private Float calorieAvg;
     private Integer totalSharingNumPerRecipe; // 단일 레시피의 재료별 나눔 수량 총합
@@ -36,9 +37,11 @@ public class UserEntity extends BaseEntity {
     private List<PostEntity> postList = new ArrayList<>();
 
     @Builder
-    public UserEntity(Long id, String userName, Float calorieAvg, Integer totalSharingNumPerRecipe, Integer totalSharingNum,
+    public UserEntity(Long id, String phoneNumber, String userName, Float calorieAvg, Integer totalSharingNumPerRecipe,
+                      Integer totalSharingNum,
                       List<PostEntity> postList) {
         this.id = id;
+        this.phoneNumber = phoneNumber;
         this.userName = userName;
         this.calorieAvg = calorieAvg;
         this.totalSharingNumPerRecipe = totalSharingNumPerRecipe;

@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 public class UserDto {
 
     private Long userId;
+    private String phoneNumber;
     private String userName;
     private Float calorieAvg;
     private Integer totalSharingNumPerRecipe; // 단일 레시피의 재료별 나눔 수량 총합
@@ -20,9 +21,12 @@ public class UserDto {
     private List<PostDto> postDtoList;
 
     @Builder
-    public UserDto(Long userId, String userName, Float calorieAvg, Integer totalSharingNumPerRecipe, Integer totalSharingNum,
+    public UserDto(Long userId, String phoneNumber,
+                   String userName, Float calorieAvg, Integer totalSharingNumPerRecipe,
+                   Integer totalSharingNum,
                    List<PostDto> postDtoList) {
         this.userId = userId;
+        this.phoneNumber = phoneNumber;
         this.userName = userName;
         this.calorieAvg = calorieAvg;
         this.totalSharingNumPerRecipe = totalSharingNumPerRecipe;
