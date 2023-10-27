@@ -1,0 +1,9 @@
+jwt:
+  secret: ourbasket0secret1key
+
+  access: # 1hour (1ms * 1000개 * 60초 * 60분)
+    expiration: 3600000
+    header: Authorization
+  refresh: # 2weeks (1밀리초 * 1000 * 60 * 60분 * 24시간 * 14일)
+    expiration: 1209600000
+    header: Authorization-refresh
