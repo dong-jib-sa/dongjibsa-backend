@@ -14,22 +14,30 @@ public class UserDto {
 
     private Long userId;
     private String userName;
+    private String phoneNumber;
+
     private Float calorieAvg;
     private Integer totalSharingNumPerRecipe; // 단일 레시피의 재료별 나눔 수량 총합
     private Integer totalSharingNum; // 모든 레시피의 나눔 수량 총합
+
     private List<PostDto> postDtoList;
 
     @Builder
-    public UserDto(Long userId, String userName, Float calorieAvg, Integer totalSharingNumPerRecipe, Integer totalSharingNum,
+    public UserDto(Long userId, String userName, String phoneNumber,
+                   Float calorieAvg, Integer totalSharingNumPerRecipe, Integer totalSharingNum,
                    List<PostDto> postDtoList) {
         this.userId = userId;
         this.userName = userName;
+        this.phoneNumber = phoneNumber;
         this.calorieAvg = calorieAvg;
         this.totalSharingNumPerRecipe = totalSharingNumPerRecipe;
         this.totalSharingNum = totalSharingNum;
         this.postDtoList = postDtoList;
     }
 
+    /*
+    [ ] 인증, 인가 방식에 따라 toDto 메서드 보완 필요
+     */
     public static UserDto toDto(UserEntity userEntity) {
 
         List<PostDto> postDtos = PostDto.toDtoList(userEntity.getPostList());
@@ -39,5 +47,11 @@ public class UserDto {
                       .userName(userEntity.getUserName())
                       .postDtoList(postDtos)
                       .build();
+    }
+
+    public static UserEntity toEntity(UserDto userDto) {
+        return UserEntity.builder()
+                         .phoneNumber(userDto.getPhoneNumber())
+                         .build();
     }
 }
