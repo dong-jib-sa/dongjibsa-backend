@@ -2,7 +2,6 @@ package com.djs.dongjibsabackend.controller;
 
 import com.djs.dongjibsabackend.domain.dto.Response;
 import com.djs.dongjibsabackend.domain.dto.user.UserRequest;
-import com.djs.dongjibsabackend.domain.dto.user.UserResponse;
 import com.djs.dongjibsabackend.service.UserService;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +23,7 @@ public class UserController {
 
     // 로그인
     @PostMapping("/verifyPhoneNumber")
-    public Response<UserResponse> login (UserRequest userRequest) throws IOException {
+    public Response login (UserRequest userRequest) throws IOException {
 
         boolean isUser = userService.verifyPhoneNumber(userRequest);
 
