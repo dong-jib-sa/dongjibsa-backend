@@ -26,7 +26,7 @@ public class UserEntity extends BaseEntity {
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String userName; // 닉네임, 변경 가능
+    private String userName; // 닉네임
     private String phoneNumber; // 전화번호 로그인 시 저장되는 필드
 
     /**
