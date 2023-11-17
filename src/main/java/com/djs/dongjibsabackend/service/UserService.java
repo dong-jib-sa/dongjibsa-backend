@@ -4,6 +4,7 @@ import com.djs.dongjibsabackend.domain.dto.user.UserDto;
 import com.djs.dongjibsabackend.domain.dto.user.UserRequest;
 import com.djs.dongjibsabackend.domain.entity.UserEntity;
 import com.djs.dongjibsabackend.repository.UserRepository;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,9 +20,10 @@ public class UserService {
 
         String phoneNumber = userRequest.getPhoneNumber();
 
-        UserEntity userEntity = userRepository.findByPhoneNumber(phoneNumber);
+        Optional<UserEntity> userEntity = userRepository.findByPhoneNumber(phoneNumber);
+        System.out.println(userEntity);
 
-        if (userEntity != null) {
+        if (userEntity.isPresent()) {
             log.info("이미 존재하는 회원입니다. ");
             return true;
         } else {
