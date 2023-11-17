@@ -23,7 +23,7 @@ public class UserController {
 
     // 로그인
     @PostMapping("/verifyPhoneNumber")
-    public Response login (UserRequest userRequest) throws IOException {
+    public Response login (@RequestBody UserRequest userRequest) throws IOException {
 
         boolean isUser = userService.verifyPhoneNumber(userRequest);
 
