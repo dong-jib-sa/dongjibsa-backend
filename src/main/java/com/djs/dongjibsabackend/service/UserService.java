@@ -27,7 +27,7 @@ public class UserService {
             log.info("이미 존재하는 회원입니다. ");
             return true;
         } else {
-            log.info("해당 전화번호가 존재하지 않아 회원가입을 진행합니다.");
+            log.info ("해당 전화번호가 존재하지 않아 회원가입을 진행합니다.");
             UserDto userDto = UserDto.builder()
                                      .phoneNumber(userRequest.getPhoneNumber())
                                      .build();

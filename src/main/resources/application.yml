@@ -8,8 +8,8 @@ server:
 spring:
   jpa:
     hibernate:
-#      ddl-auto: create
-      ddl-auto: validate
+      ddl-auto: create
+#      ddl-auto: validate
     show-sql: true
     database-platform: org.hibernate.dialect.MySQL8Dialect
     properties:
@@ -28,6 +28,11 @@ spring:
     level:
       root:
         DEBUG
+  profiles:
+    include:
+      - oauth
+      - jwt
+
 springdoc:
   packages-to-scan: com.djs.dongjibsabackend.controller
   default-consumes-media-type: application/json;charset=UTF-8 # 기본 요청 타입
