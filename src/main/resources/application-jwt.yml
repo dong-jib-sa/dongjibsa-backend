@@ -1,0 +1,9 @@
+jwt:
+  secret: secret
+
+  access:
+    expiration: 3600000 # Access Token 만료 시간: 1시간
+    header: Authorization
+  refresh:
+    expiration: 1209600000 # Refresh Token 만료 시간: 2주
+    header: Authorization-refresh
