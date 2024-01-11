@@ -1,6 +1,6 @@
 package com.djs.dongjibsabackend.global.oauth2;
 
-import com.djs.dongjibsabackend.domain.entity.UserEntity;
+import com.djs.dongjibsabackend.domain.entity.MemberEntity;
 import com.djs.dongjibsabackend.domain.enums.Role;
 import com.djs.dongjibsabackend.domain.enums.SocialType;
 import com.djs.dongjibsabackend.global.oauth2.userinfo.OAuth2UserInfo;
@@ -37,13 +37,13 @@ public class OAuthAttributes {
                               .build();
     }
 
-    public UserEntity toEntity(SocialType socialType, OAuth2UserInfo oauth2UserInfo) {
-        return UserEntity.builder()
-                         .socialType(socialType)
-                         .socialId(oauth2UserInfo.getId())
-                         .email(UUID.randomUUID() + "@socialUser.com")
-                         .role(Role.GUEST)
-                         .build();
+    public MemberEntity toEntity(SocialType socialType, OAuth2UserInfo oauth2UserInfo) {
+        return MemberEntity.builder()
+                           .socialType(socialType)
+                           .socialId(oauth2UserInfo.getId())
+                           .email(UUID.randomUUID() + "@socialUser.com")
+                           .role(Role.GUEST)
+                           .build();
     }
 
 }

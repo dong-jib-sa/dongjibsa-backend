@@ -1,8 +1,7 @@
 package com.djs.dongjibsabackend.global.jwt;
 
-import com.djs.dongjibsabackend.repository.UserRepository;
+import com.djs.dongjibsabackend.repository.MemberRepository;
 
-import com.nimbusds.jose.Algorithm;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -41,7 +40,7 @@ public class TokenProvider {
     private static final String EMAIL_CLAIM = "email";
     private static final String BEARER = "Bearer ";
 
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
 
     public String createAccessToken (String email) {
         Claims claims = Jwts.claims();
@@ -119,8 +118,8 @@ public class TokenProvider {
     }
 
     public void updateRefreshToken (String phoneNumber, String refreshToken) {
-        userRepository.findByPhoneNumber(phoneNumber)
-            .ifPresentOrElse(
+        memberRepository.findByPhoneNumber(phoneNumber)
+                        .ifPresentOrElse(
                 userEntity -> userEntity.updateRefreshToken(refreshToken),
                 () -> new Exception("User Not Found.")
                             );

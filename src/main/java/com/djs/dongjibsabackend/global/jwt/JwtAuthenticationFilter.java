@@ -1,7 +1,7 @@
 package com.djs.dongjibsabackend.global.jwt;
 
-import com.djs.dongjibsabackend.domain.entity.UserEntity;
-import com.djs.dongjibsabackend.repository.UserRepository;
+import com.djs.dongjibsabackend.domain.entity.MemberEntity;
+import com.djs.dongjibsabackend.repository.MemberRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,13 +29,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final String PASSED_URL = "/login"; // "/login"으로 들어오는 요청은 Filter 작동 X
     private final TokenProvider tokenProvider;
 
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
 
     private GrantedAuthoritiesMapper authoritiesMapper = new NullAuthoritiesMapper(); // 왜 쓰지?
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
         throws ServletException, IOException {
+
+        log.info("Jwt Filter: Enter doFilterInternal Stage. ");
 
         // login 요청은
         if (request.getRequestURI().equals(PASSED_URL)) {
@@ -48,6 +50,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             .filter(tokenProvider::verifyToken)
             .orElse(null);
 
+        log.info("refresh Token: {}",refreshToken);
+
         // Reissue Refresh-Token
         if (refreshToken != null) {
             reIssueAccessToken(response, verifyRefreshToken(refreshToken));
@@ -57,16 +61,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // Check Access-Token and Pass to another filter
         if (refreshToken == null) {
             checkAccessTokenAndAuthentication(request, response, filterChain);
-
         }
 
     }
 
-    public Optional<UserEntity> verifyRefreshToken(String refreshToken) {
-        return userRepository.findByRefreshToken(refreshToken);
+    public Optional<MemberEntity> verifyRefreshToken(String refreshToken) {
+        log.info("Jwt Filter: Enter verify Refresh Token stage. ");
+        return memberRepository.findByRefreshToken(refreshToken);
     }
 
-    public void reIssueAccessToken (HttpServletResponse response, Optional<UserEntity> user) {
+    public void reIssueAccessToken(HttpServletResponse response, Optional<MemberEntity> user) {
+        log.info("Jwt Filter: Enter reIssue Access Token stage. ");
+        log.info("user: " , user);
+
+
         if (user.isPresent()) {
             String reIssuedRefreshToken = reIssueRefreshToken(user.get());
             tokenProvider.sendAccessAndRefreshTokenWithHeader(response,
@@ -75,11 +83,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
     }
 
-    private String reIssueRefreshToken(UserEntity user) {
+    private String reIssueRefreshToken(MemberEntity user) {
+        log.info("Jwt Filter: Enter reIssue Refresh Token stage. ");
 
         String reIssuedRefreshToken = tokenProvider.createRefreshToken();
         user.updateRefreshToken(reIssuedRefreshToken);
-        userRepository.saveAndFlush(user);
+        memberRepository.saveAndFlush(user);
         return reIssuedRefreshToken;
     }
 
@@ -87,17 +96,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                   HttpServletResponse response,
                                   FilterChain filterChain) throws ServletException, IOException {
 
+        log.info("Jwt Filter: Enter check Access Token and Auth stage. ");
+        log.info("Access Token: {}", tokenProvider.extractAccessToken(request));
+        log.info("Request: {}", request.toString());
+        log.info("Response: {}", response.toString());
+
         tokenProvider.extractAccessToken(request).filter(tokenProvider::verifyToken)
             .ifPresent(accessToken -> tokenProvider.extreactEmail(accessToken)
-                .ifPresent(email -> userRepository.findByEmail(email)
-                    .ifPresent(this::saveAuthentication)));
+                .ifPresent(email -> memberRepository.findByEmail(email)
+                                                    .ifPresent(this::saveAuthentication)));
 
         filterChain.doFilter(request, response);
     }
 
-    private void saveAuthentication(UserEntity userEntity) {
+    private void saveAuthentication(MemberEntity memberEntity) {
+        log.info("Jwt Filter: Enter save Auth stage. ");
          UserDetails user = User.builder()
-                                .username(userEntity.getEmail())
+                                .username(memberEntity.getEmail())
                                 .build();
          Authentication auth = new UsernamePasswordAuthenticationToken(user, null, authoritiesMapper.mapAuthorities(user.getAuthorities()));
 

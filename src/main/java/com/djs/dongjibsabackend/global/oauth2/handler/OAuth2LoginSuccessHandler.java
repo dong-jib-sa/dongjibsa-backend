@@ -3,7 +3,7 @@ package com.djs.dongjibsabackend.global.oauth2.handler;
 import com.djs.dongjibsabackend.domain.enums.Role;
 import com.djs.dongjibsabackend.global.jwt.TokenProvider;
 import com.djs.dongjibsabackend.global.oauth2.CustomOAuth2User;
-import com.djs.dongjibsabackend.repository.UserRepository;
+import com.djs.dongjibsabackend.repository.MemberRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     private final TokenProvider tokenProvider;
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
     private final String bearer = "Bearer ";
 
     @Override
@@ -34,6 +34,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
             // ROLE_GUEST는 뉴비
             if (oAuth2User.getRole() == Role.GUEST) {
+                log.info("email: {}", oAuth2User.getEmail());
                 String accessToken = tokenProvider.createAccessToken(oAuth2User.getEmail());
                 response.addHeader(tokenProvider.getAccessHeader(), bearer + accessToken);
 

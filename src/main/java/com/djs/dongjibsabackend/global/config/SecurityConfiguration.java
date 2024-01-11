@@ -5,18 +5,14 @@ import com.djs.dongjibsabackend.global.jwt.TokenProvider;
 import com.djs.dongjibsabackend.global.oauth2.handler.OAuth2LoginFailureHandler;
 import com.djs.dongjibsabackend.global.oauth2.handler.OAuth2LoginSuccessHandler;
 import com.djs.dongjibsabackend.global.oauth2.service.CustomOAuth2UserService;
-import com.djs.dongjibsabackend.repository.UserRepository;
+import com.djs.dongjibsabackend.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -24,7 +20,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 public class SecurityConfiguration {
 
     private final TokenProvider tokenProvider;
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
     private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
     private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
     private final CustomOAuth2UserService customOAuth2UserService;
@@ -41,18 +37,17 @@ public class SecurityConfiguration {
     private static final String[] ALLOWED_AUTH = {}; // 홈 화면
 
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+//-------------------------------------------------------------------------------------------
         http
+            .formLogin().disable() // FormLogin 사용 X
+            .httpBasic().disable()// httpBasic 사용 X
+            .csrf().disable() // csrf 보안 사용 X
+            .headers(headers -> headers.frameOptions().disable())
 //-------------------------------------------------------------------------------------------
-            .formLogin().disable()
-            .httpBasic().disable()
-            .csrf().disable() // csrf 비활성화
-            .headers().frameOptions().disable()
-            .and()
-//-------------------------------------------------------------------------------------------
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            // .sessionManagement(session ->
-            //    session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .and()
+            .sessionManagement(session ->
+                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            )
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 //-------------------------------------------------------------------------------------------
             .authorizeHttpRequests(authorize ->
                     authorize.requestMatchers(SWAGGER_AUTH).permitAll()
@@ -64,7 +59,6 @@ public class SecurityConfiguration {
             .successHandler(oAuth2LoginSuccessHandler)
             .failureHandler(oAuth2LoginFailureHandler)
             .userInfoEndpoint().userService(customOAuth2UserService);
-        http.addFilterBefore(jwtAuthenticationFilter, BasicAuthenticationFilter.class);
         return http.build();
     }
 }

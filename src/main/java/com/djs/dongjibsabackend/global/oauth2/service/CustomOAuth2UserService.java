@@ -1,10 +1,10 @@
 package com.djs.dongjibsabackend.global.oauth2.service;
 
-import com.djs.dongjibsabackend.domain.entity.UserEntity;
+import com.djs.dongjibsabackend.domain.entity.MemberEntity;
 import com.djs.dongjibsabackend.domain.enums.SocialType;
 import com.djs.dongjibsabackend.global.oauth2.CustomOAuth2User;
 import com.djs.dongjibsabackend.global.oauth2.OAuthAttributes;
-import com.djs.dongjibsabackend.repository.UserRepository;
+import com.djs.dongjibsabackend.repository.MemberRepository;
 import java.util.Collections;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -22,12 +22,11 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
     private static final String KAKAO = "kakao";
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-
         log.info("CustomOAuth2UserService.loadUser() - OAuth2 로그인 요청 진입");
 
         OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
@@ -41,7 +40,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
         OAuthAttributes extracted = OAuthAttributes.of(socialType, userNameAttributeName, attributes);
 
-        UserEntity createdUser = getUser(extracted, socialType);
+        MemberEntity createdUser = getUser(extracted, socialType);
 
         return new CustomOAuth2User(
             Collections.singleton(new SimpleGrantedAuthority(createdUser.getRole().getKey())),
@@ -59,18 +58,18 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         return SocialType.APPLE;
     }
 
-    private UserEntity getUser (OAuthAttributes attributes, SocialType socialType) {
-        UserEntity finduser = userRepository.findBySocialTypeAndSocialId(socialType, attributes.getOauth2UserInfo().getId())
-            .orElse(null);
+    private MemberEntity getUser(OAuthAttributes attributes, SocialType socialType) {
+        MemberEntity findUser = memberRepository.findBySocialTypeAndSocialId(socialType, attributes.getOauth2UserInfo().getId())
+                                                .orElse(null);
 
-        if (finduser == null) {
+        if (findUser == null) {
             return saveUser(attributes, socialType);
         }
-        return finduser;
+        return findUser;
     }
 
-    private UserEntity saveUser(OAuthAttributes attributes, SocialType socialType) {
-        UserEntity createdUser = attributes.toEntity(socialType, attributes.getOauth2UserInfo());
-        return userRepository.save(createdUser);
+    private MemberEntity saveUser(OAuthAttributes attributes, SocialType socialType) {
+        MemberEntity createdUser = attributes.toEntity(socialType, attributes.getOauth2UserInfo());
+        return memberRepository.save(createdUser);
     }
 }
