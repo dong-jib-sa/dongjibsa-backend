@@ -1,7 +1,7 @@
-package com.djs.dongjibsabackend.domain.dto.user;
+package com.djs.dongjibsabackend.domain.dto.member;
 
 import com.djs.dongjibsabackend.domain.dto.post.PostDto;
-import com.djs.dongjibsabackend.domain.entity.UserEntity;
+import com.djs.dongjibsabackend.domain.entity.MemberEntity;
 import com.djs.dongjibsabackend.domain.enums.SocialType;
 import java.util.List;
 import lombok.AccessLevel;
@@ -11,10 +11,10 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class UserDto {
+public class MemberDto {
 
-    private Long userId;
-    private String userName;
+    private Long memberId;
+    private String nickName;
 
     private String phoneNumber; // PhoneNumber Auth Login
     private String email; // OAuth Login
@@ -31,12 +31,12 @@ public class UserDto {
     private List<PostDto> postDtoList;
 
     @Builder
-    public UserDto(Long userId, String userName, String phoneNumber, String email,
-                   SocialType socialType, String socialId, String refreshToken,
-                   Float calorieAvg, Integer totalSharingNumPerRecipe, Integer totalSharingNum,
-                   List<PostDto> postDtoList) {
-        this.userId = userId;
-        this.userName = userName;
+    public MemberDto(Long memberId, String nickName, String phoneNumber, String email,
+                     SocialType socialType, String socialId, String refreshToken,
+                     Float calorieAvg, Integer totalSharingNumPerRecipe, Integer totalSharingNum,
+                     List<PostDto> postDtoList) {
+        this.memberId = memberId;
+        this.nickName = nickName;
         this.phoneNumber = phoneNumber;
         this.email = email;
         this.socialType = socialType;
@@ -51,21 +51,21 @@ public class UserDto {
     /*
     [ ] 인증, 인가 방식에 따라 toDto 메서드 보완 필요
      */
-    public static UserDto toDto(UserEntity userEntity) {
+    public static MemberDto toDto(MemberEntity memberEntity) {
 
-        List<PostDto> postDtos = PostDto.toDtoList(userEntity.getPostList());
+        List<PostDto> postDtos = PostDto.toDtoList(memberEntity.getPostList());
 
-        return UserDto.builder()
-                      .userId(userEntity.getId())
-                      .userName(userEntity.getUserName())
-                      .postDtoList(postDtos)
-                      .build();
+        return MemberDto.builder()
+                        .memberId(memberEntity.getId())
+                        .nickName(memberEntity.getNickName())
+                        .postDtoList(postDtos)
+                        .build();
     }
 
-    public static UserEntity toEntity(UserDto userDto) {
-        return UserEntity.builder()
-                         .phoneNumber(userDto.getPhoneNumber())
-                         .email(userDto.getEmail())
-                         .build();
+    public static MemberEntity toEntity(MemberDto memberDto) {
+        return MemberEntity.builder()
+                           .phoneNumber(memberDto.getPhoneNumber())
+                           .email(memberDto.getEmail())
+                           .build();
     }
 }

@@ -28,10 +28,10 @@ public class PostResponse {
     private String content;
     private Integer expectingPrice;
     private Integer pricePerOne;
-    private String userName; // 작성자 이름
+    private String nickName; // = Post Writer's nickname
     private double calorie;
     private Integer peopleCount;
-    private List<PostIngredientResponse> recipeIngredients; //List<PostIngredientDto>로 타입 변경
+    private List<PostIngredientResponse> recipeIngredients; // List<PostIngredientDto>로 타입 변경
     private Integer commentsCount;
     private String imgUrl;
     @JsonFormat(shape = Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
@@ -39,7 +39,11 @@ public class PostResponse {
     @JsonFormat(shape = Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime updatedAt;
 
-    // - of (레시피 재료 dto를 받아서 response 객체로 만드는 메소드 작성하기)
+    /**
+     *
+     * @param postDto
+     * @return PostResponse
+     */
     public static PostResponse of(PostDto postDto) {
 
         List<PostIngredientDto> ingredientDto = postDto.getRecipeIngredients();
@@ -55,7 +59,7 @@ public class PostResponse {
                            .content(postDto.getContent())
                            .expectingPrice(postDto.getExpectingPrice())
                            .pricePerOne(postDto.getExpectingPrice())
-                           .userName(postDto.getUser().getUserName())
+                           .nickName(postDto.getMember().getNickName())
                            .calorie(calorie)
                            .peopleCount(postDto.getPeopleCount())
                            .recipeIngredients(ingredientResponse)
@@ -65,7 +69,11 @@ public class PostResponse {
                            .build();
     }
 
-    // 리스트로 반환하는 메서드
+    /**
+     *
+     * @param posts
+     * @return PostResponse List
+     */
     public static List<PostResponse> of(List<PostDto> posts) {
 
         return posts.stream().map(post -> PostResponse.builder()
@@ -74,7 +82,7 @@ public class PostResponse {
                                              .content(post.getContent())
                                              .expectingPrice(post.getExpectingPrice())
                                              .pricePerOne(post.getPricePerOne())
-                                             .userName(post.getUser().getUserName())
+                                             .nickName(post.getMember().getNickName())
                                              .calorie(post.getRecipeCalorie().getCalorie())
                                              .peopleCount(post.getPeopleCount())
                                              .recipeIngredients(PostIngredientResponse.of(post.getRecipeIngredients()))
@@ -83,22 +91,4 @@ public class PostResponse {
                                              .updatedAt(post.getUpdatedAt())
                                                       .build()).collect(Collectors.toList());
     }
-
-    // ---------------------------- 미사용 메서드 ----------------------------
-//    public static Page<PostResponse> of(Page<PostDto> posts) {
-//
-//        return posts.map(post -> PostResponse.builder()
-//                                             .title(post.getTitle())
-//                                             .content(post.getContent())
-//                                             .expectingPrice(post.getExpectingPrice())
-//                                             .pricePerOne(post.getPricePerOne())
-//                                             .userName(post.getUser().getUserName())
-//                                             .calorie(post.getRecipeCalorie().getCalorie())
-//                                             .peopleCount(post.getPeopleCount())
-//                                             .recipeIngredients(PostIngredientResponse.of(post.getRecipeIngredients()))
-//                                             .imgUrl(post.getImgUrl())
-//                                             .build());
-//    }
-
-
 }

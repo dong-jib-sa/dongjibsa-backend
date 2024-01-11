@@ -5,15 +5,15 @@ import static java.util.stream.Collectors.reducing;
 import com.djs.dongjibsabackend.domain.dto.myPage.MyIndicatorResponse;
 import com.djs.dongjibsabackend.domain.dto.post.PostDto;
 import com.djs.dongjibsabackend.domain.dto.post_ingredient.PostIngredientDto;
-import com.djs.dongjibsabackend.domain.dto.user.UserDto;
+import com.djs.dongjibsabackend.domain.dto.member.MemberDto;
 import com.djs.dongjibsabackend.domain.entity.PostEntity;
 import com.djs.dongjibsabackend.domain.entity.PostIngredientEntity;
-import com.djs.dongjibsabackend.domain.entity.UserEntity;
+import com.djs.dongjibsabackend.domain.entity.MemberEntity;
 import com.djs.dongjibsabackend.exception.AppException;
 import com.djs.dongjibsabackend.exception.ErrorCode;
 import com.djs.dongjibsabackend.repository.PostIngredientRepository;
 import com.djs.dongjibsabackend.repository.PostRepository;
-import com.djs.dongjibsabackend.repository.UserRepository;
+import com.djs.dongjibsabackend.repository.MemberRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,19 +24,19 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class MyPageService {
 
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
     private final PostIngredientRepository postIngredientRepository;
     private final PostRepository postRepository;
 
-    public UserEntity findUserById(Long userId) {
-        return userRepository.findById(userId).orElseThrow(
+    public MemberEntity findMemberById(Long memberId) {
+        return memberRepository.findById(memberId).orElseThrow(
             () -> new AppException(ErrorCode.USER_NOT_FOUND, "존재하지 않는 사용자입니다."));
     }
 
     // public List<PostDto> getMyPostList(Long userId) {
     public List<PostDto> getMyPostList() {
         // 유저가 작성한 Post 리스트 객체 생성
-        List<PostEntity> postEntityList = postRepository.findAllByUserId(3L);
+        List<PostEntity> postEntityList = postRepository.findAllByMemberId(3L);
 
         // PostDto 리스트로 변환
         List<PostDto> postDtoList = postEntityList.stream().map(PostDto::toDto).collect(Collectors.toList());
@@ -46,11 +46,11 @@ public class MyPageService {
 
     // public MyIndicatorResponse calculate(Long userId) {
     public MyIndicatorResponse calculate() {
-        UserEntity user = findUserById(3L); // 유저
-        UserDto userDto = UserDto.toDto(user); // 유저 -> dto
+        MemberEntity user = findMemberById(3L); // 유저
+        MemberDto memberDto = MemberDto.toDto(user); // 유저 -> dto
 
         // 유저가 작성한 PostList
-        List<PostDto> postDtoList = userDto.getPostDtoList(); // [{1, [[재료, 나눔수량], [재료, 나눔수량], [재료, 나눔수량], 제목, 내용, ...},
+        List<PostDto> postDtoList = memberDto.getPostDtoList(); // [{1, [[재료, 나눔수량], [재료, 나눔수량], [재료, 나눔수량], 제목, 내용, ...},
                                                               // {2, [[재료, 나눔수량], [재료, 나눔수량], [재료, 나눔수량], 제목, 내용, ...},
                                                               // {3, [[재료, 나눔수량], [재료, 나눔수량], [재료, 나눔수량], 제목, 내용, ...},
                                                               // {4, [[재료, 나눔수량], [재료, 나눔수량], [재료, 나눔수량], 제목, 내용, ...}]

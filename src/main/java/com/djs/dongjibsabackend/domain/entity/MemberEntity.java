@@ -7,7 +7,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -21,16 +20,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "user")
+@Table(name = "member")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class UserEntity extends BaseEntity {
+public class MemberEntity extends BaseEntity {
 
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String userName; // 닉네임
+    private String nickName; // 닉네임
 
     /**
      * Case 1: 전화번호 로그인
@@ -66,16 +65,16 @@ public class UserEntity extends BaseEntity {
      * 회원이 작성한 게시글 목록
      */
     @JsonIgnore
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "member")
     private List<PostEntity> postList = new ArrayList<>();
 
     @Builder
-    public UserEntity(Long id, String userName, String phoneNumber, String email,
-                      SocialType socialType, String socialId, Role role, String refreshToken,
-                      Float calorieAvg, Integer totalSharingNumPerRecipe, Integer totalSharingNum,
-                      List<PostEntity> postList) {
+    public MemberEntity(Long id, String nickName, String phoneNumber, String email,
+                        SocialType socialType, String socialId, Role role, String refreshToken,
+                        Float calorieAvg, Integer totalSharingNumPerRecipe, Integer totalSharingNum,
+                        List<PostEntity> postList) {
         this.id = id;
-        this.userName = userName;
+        this.nickName = nickName;
         this.phoneNumber = phoneNumber;
         this.email = email;
         this.socialType = socialType;

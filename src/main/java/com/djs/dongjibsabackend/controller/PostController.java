@@ -42,11 +42,8 @@ public class PostController {
     private final PostRepository postRepository;
 
     // 1. 게시글 작성
-    @PostMapping(path = "/new",
-        consumes = {"multipart/form-data"}
-        ,headers = ("content-type=multipart/*")
-    )
-    public Response registerPost(@ModelAttribute RegisterPostRequest req) throws IOException, MissingServletRequestPartException {
+    @PostMapping(path = "/new", consumes = {"multipart/form-data"}, headers = ("content-type=multipart/*"))
+    public Response registerPost (@ModelAttribute RegisterPostRequest req) throws IOException, MissingServletRequestPartException {
 
         PostDto postDto = postService.register(req);
 

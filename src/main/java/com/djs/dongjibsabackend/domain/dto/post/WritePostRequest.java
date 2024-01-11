@@ -1,12 +1,11 @@
 package com.djs.dongjibsabackend.domain.dto.post;
 
-import com.djs.dongjibsabackend.domain.dto.post_ingredient.PostIngredientDto;
 import com.djs.dongjibsabackend.domain.dto.post_ingredient.PostIngredientRequest;
 import com.djs.dongjibsabackend.domain.entity.LocationEntity;
 import com.djs.dongjibsabackend.domain.entity.PostEntity;
 import com.djs.dongjibsabackend.domain.entity.PostIngredientEntity;
 import com.djs.dongjibsabackend.domain.entity.RecipeCalorieEntity;
-import com.djs.dongjibsabackend.domain.entity.UserEntity;
+import com.djs.dongjibsabackend.domain.entity.MemberEntity;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -20,7 +19,7 @@ import lombok.Setter;
 public class WritePostRequest {
 
     private String title; // 글 제목
-    private String userName; // 작성자 이름
+    private String nickName; // 작성자 이름
     private String recipeName; // 레시피 이름
     private Integer expectingPrice; // 예상 가격
     private Integer pricePerOne; // 1인 당 예상 가격
@@ -42,7 +41,7 @@ public class WritePostRequest {
         this.peopleCount = peopleCount;
     }
 
-    public PostEntity toEntity(UserEntity user,
+    public PostEntity toEntity(MemberEntity member,
                                LocationEntity location,
                                RecipeCalorieEntity recipeCalorie,
                                List<PostIngredientEntity> recipeIngredients) {
@@ -51,7 +50,7 @@ public class WritePostRequest {
                          .content(this.content)
                          .expectingPrice(this.expectingPrice)
                          .pricePerOne(this.pricePerOne)
-                         .user(user)
+                         .member(member)
                          .recipeCalorie(recipeCalorie)
                          .peopleCount(this.peopleCount)
                          .location(location)

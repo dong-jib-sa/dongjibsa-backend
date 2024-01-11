@@ -1,4 +1,4 @@
-package com.djs.dongjibsabackend.domain.dto.user;
+package com.djs.dongjibsabackend.domain.dto.member;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserRequest {
+public class MemberRequest {
 
     private String phoneNumber;
 

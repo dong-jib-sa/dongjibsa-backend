@@ -1,9 +1,6 @@
 package com.djs.dongjibsabackend.domain.entity;
 
 
-import com.djs.dongjibsabackend.domain.dto.post.PostDto;
-import com.djs.dongjibsabackend.exception.AppException;
-import com.djs.dongjibsabackend.exception.ErrorCode;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -39,8 +36,8 @@ public class PostEntity extends BaseEntity {
     private Integer pricePerOne; // 1인당 가격
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private UserEntity user;
+    @JoinColumn(name = "member_id")
+    private MemberEntity member;
 
     // private double calorie; // 1인분 칼로리
     @OneToOne
@@ -62,7 +59,7 @@ public class PostEntity extends BaseEntity {
     @Builder
     public PostEntity(Long id, String title, String content,
                       Integer expectingPrice, Integer pricePerOne,
-                      UserEntity user, RecipeCalorieEntity recipeCalorie,
+                      MemberEntity member, RecipeCalorieEntity recipeCalorie,
                       Integer peopleCount, LocationEntity location,
                       List<PostIngredientEntity> recipeIngredients,
                       String imgUrl) {
@@ -71,7 +68,7 @@ public class PostEntity extends BaseEntity {
         this.content = content;
         this.expectingPrice = expectingPrice;
         this.pricePerOne = pricePerOne;
-        this.user = user;
+        this.member = member;
         this.recipeCalorie = recipeCalorie;
         this.peopleCount = peopleCount;
         this.location = location;
