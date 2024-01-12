@@ -84,21 +84,18 @@ public class PostResponse {
                                                       .build()).collect(Collectors.toList());
     }
 
-    // ---------------------------- 미사용 메서드 ----------------------------
-//    public static Page<PostResponse> of(Page<PostDto> posts) {
-//
-//        return posts.map(post -> PostResponse.builder()
-//                                             .title(post.getTitle())
-//                                             .content(post.getContent())
-//                                             .expectingPrice(post.getExpectingPrice())
-//                                             .pricePerOne(post.getPricePerOne())
-//                                             .userName(post.getUser().getUserName())
-//                                             .calorie(post.getRecipeCalorie().getCalorie())
-//                                             .peopleCount(post.getPeopleCount())
-//                                             .recipeIngredients(PostIngredientResponse.of(post.getRecipeIngredients()))
-//                                             .imgUrl(post.getImgUrl())
-//                                             .build());
-//    }
+    public static Page<PostResponse> of(Page<PostDto> posts) {
 
-
+        return posts.map(post -> PostResponse.builder()
+                                             .title(post.getTitle())
+                                             .content(post.getContent())
+                                             .expectingPrice(post.getExpectingPrice())
+                                             .pricePerOne(post.getPricePerOne())
+                                             .nickName(post.getMember().getNickName())
+                                             .calorie(post.getRecipeCalorie().getCalorie())
+                                             .peopleCount(post.getPeopleCount())
+                                             .recipeIngredients(PostIngredientResponse.of(post.getRecipeIngredients()))
+                                             .imgUrl(post.getImgUrl())
+                                             .build());
+    }
 }

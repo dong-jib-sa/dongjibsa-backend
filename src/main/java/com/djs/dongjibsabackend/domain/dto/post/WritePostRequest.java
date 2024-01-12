@@ -24,15 +24,14 @@ public class WritePostRequest {
     private Integer expectingPrice; // 예상 가격
     private Integer pricePerOne; // 1인 당 예상 가격
     private Integer peopleCount; // 파티원 수
-    private String dong; // 위치 dto
+    // private String dong; // 위치 dto
     private List<PostIngredientRequest> ingredients; // 게시글 재료 목록
     private String content; // 내용
-
 
     @Builder
     public WritePostRequest (String title, String content, Integer expectingPrice,
                              Integer pricePerOne, String recipeName,
-                             Integer peopleCount, String imgUrl) {
+                             Integer peopleCount) {
         this.title = title;
         this.content = content;
         this.expectingPrice = expectingPrice;
@@ -42,7 +41,7 @@ public class WritePostRequest {
     }
 
     public PostEntity toEntity(MemberEntity member,
-                               LocationEntity location,
+                               // LocationEntity location,
                                RecipeCalorieEntity recipeCalorie,
                                List<PostIngredientEntity> recipeIngredients) {
         return PostEntity.builder()
@@ -53,7 +52,7 @@ public class WritePostRequest {
                          .member(member)
                          .recipeCalorie(recipeCalorie)
                          .peopleCount(this.peopleCount)
-                         .location(location)
+                         // .location(location)
                          .recipeIngredients(recipeIngredients)
                          .build();
     }

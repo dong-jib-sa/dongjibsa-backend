@@ -8,6 +8,6 @@ import org.springframework.data.repository.query.Param;
 
 public interface LocationRepository extends JpaRepository<LocationEntity, Long> {
 
-    @Query("select l from LocationEntity l where l.dong = :name")
-    LocationEntity findLocationByDong(@Param("name") String dong);
+//    @Query("select l from LocationEntity l where l.dong = :name")
+//    LocationEntity findLocationByDong(@Param("name") String dong);
 }

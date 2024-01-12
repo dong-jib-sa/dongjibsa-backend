@@ -14,6 +14,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.domain.Page;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -27,7 +28,7 @@ public class PostDto {
     private MemberEntity member;
     private RecipeCalorieDto recipeCalorie;
     private Integer peopleCount;
-    private LocationEntity location;
+    // private LocationEntity location;
     private List<PostIngredientDto> recipeIngredients;
     private String imgUrl;
     private Integer commentsCount;
@@ -36,7 +37,8 @@ public class PostDto {
 
     @Builder
     public PostDto (Long id, String title, String content, Integer expectingPrice, Integer pricePerOne, MemberEntity member,
-                    RecipeCalorieDto recipeCalorie, Integer peopleCount, LocationEntity location,
+                    RecipeCalorieDto recipeCalorie, Integer peopleCount,
+                    // LocationEntity location,
                     List<PostIngredientDto> recipeIngredients, String imgUrl,
                     Integer commentsCount, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
@@ -47,7 +49,7 @@ public class PostDto {
         this.member = member;
         this.recipeCalorie = recipeCalorie;
         this.peopleCount = peopleCount;
-        this.location = location;
+        // this.location = location;
         this.recipeIngredients = recipeIngredients;
         this.imgUrl = imgUrl;
         this.commentsCount = commentsCount;
@@ -76,7 +78,7 @@ public class PostDto {
                       .member(post.getMember())
                       .recipeCalorie(recipeCalorieDto)
                       .peopleCount(post.getPeopleCount())
-                      .location(post.getLocation())
+                      // .location(post.getLocation())
                       .recipeIngredients(postIngredientDtoList)
                       .imgUrl(post.getImgUrl())
                       .createdAt(post.getCreatedAt())
@@ -91,6 +93,23 @@ public class PostDto {
             PostDto dto = PostDto.toDto(entity);
             dtoList.add(dto);
         }
+        return dtoList;
+    }
+
+    public static Page<PostDto> toDtoPage(Page<PostEntity> postEntities) {
+        Page<PostDto> dtoList = postEntities.map(m -> PostDto.builder()
+                                                             .id(m.getId())
+                                                             .title(m.getTitle())
+                                                             .content(m.getContent())
+                                                             .expectingPrice(m.getExpectingPrice())
+                                                             .pricePerOne(m.getPricePerOne())
+                                                             .member(m.getMember())
+                                                             .recipeCalorie(RecipeCalorieDto.of(m.getRecipeCalorie()))
+                                                             .peopleCount(m.getPeopleCount())
+                                                             .imgUrl(m.getImgUrl())
+                                                             .createdAt(m.getCreatedAt())
+                                                             .updatedAt(m.getUpdatedAt())
+                                                             .build());
         return dtoList;
     }
 }
