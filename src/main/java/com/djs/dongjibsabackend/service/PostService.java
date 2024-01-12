@@ -1,18 +1,14 @@
 package com.djs.dongjibsabackend.service;
 
 import com.djs.dongjibsabackend.domain.dto.post.PostDto;
-import com.djs.dongjibsabackend.domain.dto.post.PostResponse;
 import com.djs.dongjibsabackend.domain.dto.post.RegisterPostRequest;
-import com.djs.dongjibsabackend.domain.dto.post.WritePostRequest;
-import com.djs.dongjibsabackend.domain.dto.post_ingredient.PostIngredientDto;
 import com.djs.dongjibsabackend.domain.dto.post_ingredient.PostIngredientRequest;
-import com.djs.dongjibsabackend.domain.dto.post_ingredient.PostIngredientResponse;
 import com.djs.dongjibsabackend.domain.entity.IngredientEntity;
 import com.djs.dongjibsabackend.domain.entity.LocationEntity;
 import com.djs.dongjibsabackend.domain.entity.PostEntity;
 import com.djs.dongjibsabackend.domain.entity.PostIngredientEntity;
 import com.djs.dongjibsabackend.domain.entity.RecipeCalorieEntity;
-import com.djs.dongjibsabackend.domain.entity.UserEntity;
+import com.djs.dongjibsabackend.domain.entity.MemberEntity;
 import com.djs.dongjibsabackend.exception.AppException;
 import com.djs.dongjibsabackend.exception.ErrorCode;
 import com.djs.dongjibsabackend.repository.IngredientRepository;
@@ -20,17 +16,13 @@ import com.djs.dongjibsabackend.repository.LocationRepository;
 import com.djs.dongjibsabackend.repository.PostIngredientRepository;
 import com.djs.dongjibsabackend.repository.PostRepository;
 import com.djs.dongjibsabackend.repository.RecipeCalorieRepository;
-import com.djs.dongjibsabackend.repository.UserRepository;
+import com.djs.dongjibsabackend.repository.MemberRepository;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 @Service
@@ -38,7 +30,7 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 @Slf4j
 public class PostService {
 
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
     private final PostRepository postRepository;
     private final LocationRepository locationRepository;
     private final PostIngredientRepository postIngredientRepository;
@@ -50,7 +42,7 @@ public class PostService {
 
         LocationEntity validateLocation = locationRepository.findLocationByDong(req.getDong());
 
-        UserEntity validateUser = userRepository.findByUserName("지예로운사람");
+        MemberEntity validateUser = memberRepository.findByNickName("지예로운사람");
 
         List<PostIngredientEntity> ingredients = new ArrayList<>();
 
@@ -61,7 +53,7 @@ public class PostService {
                                            .content(req.getContent())
                                            .expectingPrice(req.getExpectingPrice())
                                            .pricePerOne(req.getPricePerOne())
-                                           .user(validateUser)
+                                           .member(validateUser)
                                            .recipeCalorie(recipeCalorieEntity)
                                            .peopleCount(req.getPeopleCount())
                                            .location(validateLocation)

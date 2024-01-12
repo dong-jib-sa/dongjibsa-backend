@@ -5,8 +5,7 @@ import com.djs.dongjibsabackend.domain.dto.recipe_calorie.RecipeCalorieDto;
 import com.djs.dongjibsabackend.domain.entity.LocationEntity;
 import com.djs.dongjibsabackend.domain.entity.PostEntity;
 import com.djs.dongjibsabackend.domain.entity.PostIngredientEntity;
-import com.djs.dongjibsabackend.domain.entity.RecipeCalorieEntity;
-import com.djs.dongjibsabackend.domain.entity.UserEntity;
+import com.djs.dongjibsabackend.domain.entity.MemberEntity;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +24,7 @@ public class PostDto {
     private String content;
     private Integer expectingPrice;
     private Integer pricePerOne;
-    private UserEntity user;
+    private MemberEntity member;
     private RecipeCalorieDto recipeCalorie;
     private Integer peopleCount;
     private LocationEntity location;
@@ -36,7 +35,7 @@ public class PostDto {
     private LocalDateTime updatedAt;
 
     @Builder
-    public PostDto (Long id, String title, String content, Integer expectingPrice, Integer pricePerOne, UserEntity user,
+    public PostDto (Long id, String title, String content, Integer expectingPrice, Integer pricePerOne, MemberEntity member,
                     RecipeCalorieDto recipeCalorie, Integer peopleCount, LocationEntity location,
                     List<PostIngredientDto> recipeIngredients, String imgUrl,
                     Integer commentsCount, LocalDateTime createdAt, LocalDateTime updatedAt) {
@@ -45,7 +44,7 @@ public class PostDto {
         this.content = content;
         this.expectingPrice = expectingPrice;
         this.pricePerOne = pricePerOne;
-        this.user = user;
+        this.member = member;
         this.recipeCalorie = recipeCalorie;
         this.peopleCount = peopleCount;
         this.location = location;
@@ -74,7 +73,7 @@ public class PostDto {
                       .content(post.getContent())
                       .expectingPrice(post.getExpectingPrice())
                       .pricePerOne(post.getPricePerOne())
-                      .user(post.getUser())
+                      .member(post.getMember())
                       .recipeCalorie(recipeCalorieDto)
                       .peopleCount(post.getPeopleCount())
                       .location(post.getLocation())

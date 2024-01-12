@@ -26,8 +26,8 @@ public class CommentEntity extends BaseEntity {
     private String message;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private UserEntity user;
+    @JoinColumn(name = "member_id")
+    private MemberEntity member;
 
     // join
     @ManyToOne

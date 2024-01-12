@@ -2,11 +2,10 @@ package com.djs.dongjibsabackend.service;
 
 import static java.lang.System.getenv;
 
-import com.djs.dongjibsabackend.domain.dto.user.UserDto;
-import com.djs.dongjibsabackend.domain.entity.UserEntity;
+import com.djs.dongjibsabackend.domain.dto.member.MemberDto;
+import com.djs.dongjibsabackend.domain.entity.MemberEntity;
 import com.djs.dongjibsabackend.domain.enums.SocialType;
-import com.djs.dongjibsabackend.repository.UserRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.djs.dongjibsabackend.repository.MemberRepository;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import java.io.BufferedReader;
@@ -25,7 +24,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class OAuthService {
 
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
     Map<String, String> env = getenv();
     private String client_id = env.get("SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKAO_CLIENTID");
     private String redirect_uri = env.get("KAKAO_REDIRECT_URI");
@@ -83,7 +82,7 @@ public class OAuthService {
         return accessToken;
     }
 
-    public UserDto createKakaoUser(String accessToken) throws Exception{
+    public MemberDto createKakaoUser(String accessToken) throws Exception{
         String requestURL = "https://kapi.kakao.com/v2/user/me";
         String userId, email;
 
@@ -123,19 +122,19 @@ public class OAuthService {
         System.out.println("user_id: " + userId);
         log.info("email: {}", email);
 
-        UserDto userDto = UserDto.builder().socialType(SocialType.KAKAO).socialId(userId).email(email)
-                                 .build();
+        MemberDto memberDto = MemberDto.builder().socialType(SocialType.KAKAO).socialId(userId).email(email)
+                                       .build();
 
-        UserEntity user = UserDto.toEntity(userDto);
-        UserEntity savedUser = userRepository.save(user);
-        UserDto savedUserDto = UserDto.builder()
-                                      .userId(savedUser.getId())
-                                      .email(savedUser.getEmail())
-                                      .socialId(savedUser.getSocialId())
-                                      .socialType(savedUser.getSocialType())
-                                      .build();
+        MemberEntity member = MemberDto.toEntity(memberDto);
+        MemberEntity savedMember = memberRepository.save(member);
+        MemberDto savedMemberDto = MemberDto.builder()
+                                            .memberId(savedMember.getId())
+                                            .email(savedMember.getEmail())
+                                            .socialId(savedMember.getSocialId())
+                                            .socialType(savedMember.getSocialType())
+                                            .build();
         br.close();
 
-        return savedUserDto;
+        return savedMemberDto;
     }
 }
