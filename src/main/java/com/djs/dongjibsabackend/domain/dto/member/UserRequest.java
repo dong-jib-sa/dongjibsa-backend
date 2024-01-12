@@ -1,4 +1,4 @@
-package com.djs.dongjibsabackend.domain.dto.user;
+package com.djs.dongjibsabackend.domain.dto.member;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

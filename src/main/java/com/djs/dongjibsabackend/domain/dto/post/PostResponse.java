@@ -28,7 +28,7 @@ public class PostResponse {
     private String content;
     private Integer expectingPrice;
     private Integer pricePerOne;
-    private String userName; // 작성자 이름
+    private String nickName; // 작성자 이름
     private double calorie;
     private Integer peopleCount;
     private List<PostIngredientResponse> recipeIngredients; //List<PostIngredientDto>로 타입 변경
@@ -55,7 +55,7 @@ public class PostResponse {
                            .content(postDto.getContent())
                            .expectingPrice(postDto.getExpectingPrice())
                            .pricePerOne(postDto.getExpectingPrice())
-                           .userName(postDto.getUser().getUserName())
+                           .nickName(postDto.getMember().getNickName())
                            .calorie(calorie)
                            .peopleCount(postDto.getPeopleCount())
                            .recipeIngredients(ingredientResponse)
@@ -74,7 +74,7 @@ public class PostResponse {
                                              .content(post.getContent())
                                              .expectingPrice(post.getExpectingPrice())
                                              .pricePerOne(post.getPricePerOne())
-                                             .userName(post.getUser().getUserName())
+                                             .nickName(post.getMember().getNickName())
                                              .calorie(post.getRecipeCalorie().getCalorie())
                                              .peopleCount(post.getPeopleCount())
                                              .recipeIngredients(PostIngredientResponse.of(post.getRecipeIngredients()))
