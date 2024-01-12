@@ -29,7 +29,7 @@ public class PostDetailResponse {
     private List<PostIngredientResponse> ingredients; // 재료 목록
 
     public static PostDetailResponse of (PostDto postDto) {
-        String dong = postDto.getLocation().getDong();
+        // String dong = postDto.getLocation().getDong();
         LocalDateTime createdTime = postDto.getCreatedAt();
         String formattedDateTime = createdTime.format(CUSTOM_FORMATTER);
         String[] formattedDateTimeArr =formattedDateTime.split("\\s");
@@ -41,7 +41,7 @@ public class PostDetailResponse {
 
         return PostDetailResponse.builder()
                                  .title(postDto.getTitle())
-                                 .dong(dong)
+                                 //.dong(dong)
                                  .date(date)
                                  .time(time)
                                  .content(postDto.getContent())

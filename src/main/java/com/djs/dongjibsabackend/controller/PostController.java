@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -67,20 +68,19 @@ public class PostController {
 //        return Response.success(imageSavedPostDto);
 //    }
 
-    // 지역별 게시글 전체 조회 (To - Be)
-    @GetMapping("/{keywords}")
-    public List<PostResponse> getAllRecipes(
-        @PathVariable String keywords) {
-        String dongName = keywords;
+    // 게시글 리스트 조회
+    @GetMapping("")
+    public Response<Page<PostDto>> getAllRecipeList(@PageableDefault(size = 20)
+                                                    @SortDefault (sort = "createdAt", direction = Direction.DESC)
+                                                    Pageable pageable) {
 
-        List<PostDto> postDtoList = postService.searchByLocation(dongName);
+        Page<PostDto> postDtoList = postService.getRecipeList(pageable);
 
-        List<PostResponse> postResponse = PostResponse.of(postDtoList);
-
-        return postResponse;
+        return Response.success(postDtoList);
     }
 
-    @GetMapping("/{keywords}/{postId}")
+    // 게시글 1건 조회
+    @GetMapping("/{postId}")
     public PostDetailResponse getRecipeDetail(@PathVariable Long postId) {
         PostDto postDto = postService.getPostDetail(postId);
         PostDetailResponse postResponse = PostDetailResponse.of(postDto);

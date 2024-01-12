@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
@@ -32,7 +34,7 @@ public class PostService {
 
     private final MemberRepository memberRepository;
     private final PostRepository postRepository;
-    private final LocationRepository locationRepository;
+
     private final PostIngredientRepository postIngredientRepository;
     private final IngredientRepository ingredientRepository;
     private final RecipeCalorieRepository recipeCalorieRepository;
@@ -40,7 +42,7 @@ public class PostService {
 
     public PostDto register (RegisterPostRequest req) throws MissingServletRequestPartException {
 
-        LocationEntity validateLocation = locationRepository.findLocationByDong(req.getDong());
+        // LocationEntity validateLocation = locationRepository.findLocationByDong(req.getDong());
 
         MemberEntity validateUser = memberRepository.findByNickName("지예로운사람");
 
@@ -56,7 +58,7 @@ public class PostService {
                                            .member(validateUser)
                                            .recipeCalorie(recipeCalorieEntity)
                                            .peopleCount(req.getPeopleCount())
-                                           .location(validateLocation)
+                                           // .location(validateLocation)
                                            .build();
 
         List<PostIngredientRequest> dtos = req.getIngredients();
@@ -162,15 +164,10 @@ public class PostService {
 
     // 조회
     // List<RecipeIngredientEntity> recipeIngredients = recipeIngredientRepository.findAllIngredientsByRecipeId() -> 조회 로직에 사용할 것
-    public List<PostDto> searchByLocation(String dongName) {
-        LocationEntity location = locationRepository.findLocationByDong(dongName);
+    public Page<PostDto> getRecipeList (Pageable pageable) {
 
-        Long locationId = location.getId();
-
-        List<PostEntity> postEntityList = postRepository.findAllByLocationId(locationId);
-
-        List<PostDto> postDtoList = postEntityList.stream().map(PostDto::toDto).collect(Collectors.toList());
-
+        Page<PostEntity> postEntityList = postRepository.findAll(pageable);
+        Page<PostDto> postDtoList = PostDto.toDtoPage(postEntityList);
         return postDtoList;
     }
 
