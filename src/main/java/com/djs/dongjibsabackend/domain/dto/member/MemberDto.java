@@ -48,17 +48,39 @@ public class MemberDto {
      */
     public static MemberDto toDto(MemberEntity memberEntity) {
 
-        List<PostDto> postDtos = PostDto.toDtoList(memberEntity.getPostList());
+        if (memberEntity.getPostList() == null) {
+            /* APPLE */
+            if (memberEntity.getSocialId() == null) {
+                return MemberDto.builder()
+                                .memberId(memberEntity.getId())
+                                .nickName(memberEntity.getNickName())
+                                .email(memberEntity.getEmail())
+                                .socialType(memberEntity.getSocialType())
+                                .build();
+            } else {
+                return MemberDto.builder()
+                                .memberId(memberEntity.getId())
+                                .nickName(memberEntity.getNickName())
+                                .email(memberEntity.getEmail())
+                                .socialType(memberEntity.getSocialType())
+                                .socialId(memberEntity.getSocialId())
+                                .build();
+            }
+        } else {
 
-        return MemberDto.builder()
-                        .memberId(memberEntity.getId())
-                        .nickName(memberEntity.getNickName())
-                        .postDtoList(postDtos)
-                        .build();
+            List<PostDto> postDtos = PostDto.toDtoList(memberEntity.getPostList());
+
+            return MemberDto.builder()
+                            .memberId(memberEntity.getId())
+                            .nickName(memberEntity.getNickName())
+                            .postDtoList(postDtos)
+                            .build();
+        }
     }
 
     public static MemberEntity toEntity(MemberDto memberDto) {
         return MemberEntity.builder()
+                           .nickName(memberDto.getNickName())
                            .phoneNumber(memberDto.getPhoneNumber())
                            .email(memberDto.getEmail())
                            .socialId(memberDto.getSocialId())
@@ -67,8 +89,9 @@ public class MemberDto {
     }
 
     // for kakao
-    public static MemberDto toDto (String email, SocialType socialType, String socialId) {
+    public static MemberDto toDto (String nickName, String email, SocialType socialType, String socialId) {
          return MemberDto.builder()
+                         .nickName(nickName)
                          .email(email)
                          .socialType(socialType)
                          .socialId(socialId)
@@ -76,8 +99,9 @@ public class MemberDto {
     }
 
     // for Apple
-    public static MemberDto toDto (String email, SocialType socialType) {
+    public static MemberDto toDto (String nickName, String email, SocialType socialType) {
          return MemberDto.builder()
+                         .nickName(nickName)
                          .email(email)
                          .socialType(socialType)
                          .build();
