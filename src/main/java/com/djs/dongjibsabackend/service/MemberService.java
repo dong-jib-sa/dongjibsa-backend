@@ -67,25 +67,28 @@ public class MemberService {
     }
 
     public MemberDto saveOAuthUser(OAuthMemberRequest oAuthMemberRequest) {
+        String nickName = oAuthMemberRequest.getNickName();
         SocialType socialType = oAuthMemberRequest.getSocialType();
         String socialId = oAuthMemberRequest.getSocialId();
         String email = oAuthMemberRequest.getEmail();
 
         if (socialType.equals(SocialType.KAKAO)) {
             MemberDto memberDto = MemberDto.builder()
+                                           .nickName(nickName)
                                            .email(email)
                                            .socialType(socialType)
                                            .socialId(socialId)
                                            .build();
             MemberEntity savedMember = memberRepository.save(MemberDto.toEntity(memberDto));
-            return MemberDto.toDto(savedMember.getEmail(), savedMember.getSocialType(), savedMember.getSocialId());
+            return MemberDto.toDto(savedMember);
         } else {
             MemberDto memberDto = MemberDto.builder()
+                                           .nickName(nickName)
                                            .email(email)
                                            .socialType(socialType)
                                            .build();
             MemberEntity savedMember = memberRepository.save(MemberDto.toEntity(memberDto));
-            return MemberDto.toDto(savedMember.getEmail(), savedMember.getSocialType(), savedMember.getSocialId());
+            return MemberDto.toDto(savedMember);
         }
     }
 }

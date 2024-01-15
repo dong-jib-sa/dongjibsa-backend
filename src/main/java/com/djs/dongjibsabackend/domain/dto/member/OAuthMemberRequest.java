@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OAuthMemberRequest {
-
+    private String nickName;
     private String email;
     private String socialId;
     private SocialType socialType;
