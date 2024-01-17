@@ -8,8 +8,10 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Getter
+@Slf4j
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MemberDto {
 
@@ -43,21 +45,24 @@ public class MemberDto {
         this.postDtoList = postDtoList;
     }
 
-    /*
-    [ ] 인증, 인가 방식에 따라 toDto 메서드 보완 필요
-     */
     public static MemberDto toDto(MemberEntity memberEntity) {
 
+        /* 작성 게시글이 없는 유저 */
         if (memberEntity.getPostList() == null) {
-            /* APPLE */
-            if (memberEntity.getSocialId() == null) {
+            if (memberEntity.getPhoneNumber() != null) {
+                return MemberDto.builder()
+                                .memberId(memberEntity.getId())
+                                .nickName(memberEntity.getNickName())
+                                .phoneNumber(memberEntity.getPhoneNumber())
+                                .build();
+            } else if (memberEntity.getSocialType().equals(SocialType.APPLE)) {
                 return MemberDto.builder()
                                 .memberId(memberEntity.getId())
                                 .nickName(memberEntity.getNickName())
                                 .email(memberEntity.getEmail())
                                 .socialType(memberEntity.getSocialType())
                                 .build();
-            } else {
+            } else if (memberEntity.getSocialType().equals(SocialType.KAKAO)){
                 return MemberDto.builder()
                                 .memberId(memberEntity.getId())
                                 .nickName(memberEntity.getNickName())
@@ -66,50 +71,41 @@ public class MemberDto {
                                 .socialId(memberEntity.getSocialId())
                                 .build();
             }
-        } else {
 
-            List<PostDto> postDtos = PostDto.toDtoList(memberEntity.getPostList());
-
-            return MemberDto.builder()
-                            .memberId(memberEntity.getId())
-                            .nickName(memberEntity.getNickName())
-                            .postDtoList(postDtos)
-                            .build();
+        /* 기존 유저 */
         }
-    }
+        List<PostDto> postDtos = PostDto.toDtoList(memberEntity.getPostList());
 
-    public static MemberEntity toEntity(MemberDto memberDto) {
-        return MemberEntity.builder()
-                           .nickName(memberDto.getNickName())
-                           .phoneNumber(memberDto.getPhoneNumber())
-                           .email(memberDto.getEmail())
-                           .socialId(memberDto.getSocialId())
-                           .socialType(memberDto.getSocialType())
-                           .build();
-    }
-
-    // for kakao
-    public static MemberDto toDto (String nickName, String email, SocialType socialType, String socialId) {
-         return MemberDto.builder()
-                         .nickName(nickName)
-                         .email(email)
-                         .socialType(socialType)
-                         .socialId(socialId)
-                         .build();
-    }
-
-    // for Apple
-    public static MemberDto toDto (String nickName, String email, SocialType socialType) {
-         return MemberDto.builder()
-                         .nickName(nickName)
-                         .email(email)
-                         .socialType(socialType)
-                         .build();
-    }
-
-    public static MemberDto toDto(String phoneNumber) {
         return MemberDto.builder()
-                        .phoneNumber(phoneNumber)
+                        .memberId(memberEntity.getId())
+                        .nickName(memberEntity.getNickName())
+                        .postDtoList(postDtos)
                         .build();
+
+    }
+
+    public static MemberEntity toEntity (MemberDto memberDto) {
+        if (memberDto.getPhoneNumber() != null) {
+            log.info("success!: {}", memberDto.getPhoneNumber());
+            return MemberEntity.builder()
+                               .nickName(memberDto.getNickName())
+                               .phoneNumber(memberDto.getPhoneNumber())
+                               .build();
+        } else if (memberDto.getSocialType().equals(SocialType.KAKAO)) {
+            log.info("success!: {}", memberDto.getSocialType());
+            return MemberEntity.builder()
+                               .nickName(memberDto.getNickName())
+                               .email(memberDto.getEmail())
+                               .socialId(memberDto.getSocialId())
+                               .socialType(memberDto.getSocialType())
+                               .build();
+        } else {
+            log.info("success!: {}", memberDto.getSocialType());
+            return MemberEntity.builder()
+                               .nickName(memberDto.getNickName())
+                               .email(memberDto.getEmail())
+                               .socialType(memberDto.getSocialType())
+                               .build();
+        }
     }
 }

@@ -8,10 +8,10 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum ErrorCode {
 
-
-
     // User ErrorCodes
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "User Not Found."),
+    DUPLICATE_PHONE_NUMBER(HttpStatus.CONFLICT, "PhoneNumber is Duplicated."),
+    DUPLICATE_USER(HttpStatus.CONFLICT, "User Already Exist."),
 
     // Location ErrorCodes
     LOCATION_NOT_FOUND(HttpStatus.NOT_FOUND, "Location Not Exist."),
@@ -26,9 +26,6 @@ public enum ErrorCode {
     WRONG_FILE_FORMAT(HttpStatus.BAD_REQUEST, "Wrong File Format."),
 
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Error Occurs.");
-
-
-
 
     private HttpStatus httpStatus;
     private String message;
