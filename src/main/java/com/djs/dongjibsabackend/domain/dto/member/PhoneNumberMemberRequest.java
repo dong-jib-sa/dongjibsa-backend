@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserRequest {
+public class PhoneNumberMemberRequest {
 
+    private String nickName;
     private String phoneNumber;
-
 }
