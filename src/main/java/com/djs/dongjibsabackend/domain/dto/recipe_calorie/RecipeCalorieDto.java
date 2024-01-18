@@ -29,4 +29,11 @@ public class RecipeCalorieDto {
                                .calorie(recipeCalorie.getCalorie())
                                .build();
     }
+
+    public static RecipeCalorieEntity toEntity (RecipeCalorieDto dto) {
+        return RecipeCalorieEntity.builder()
+                                  .recipeName(dto.recipeName)
+                                  .calorie(dto.calorie)
+                                  .build();
+    }
 }
