@@ -17,4 +17,4 @@ public class PostIngredientRequest {
     private double requiredQty;
     private double sharingAvailableQty;
 
-}가
+}
