@@ -9,7 +9,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PostRepository extends JpaRepository<PostEntity, Long> {
     // List<PostEntity> findAllByLocationId(Long locationId);
-    Page<PostEntity> findAll(Pageable pageable);
-
+    List<PostEntity> findAll();
     List<PostEntity> findAllByMemberId(Long memberId);
 }

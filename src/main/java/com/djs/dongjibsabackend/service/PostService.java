@@ -162,16 +162,15 @@ public class PostService {
 //        return savedPostDto;
 //    }
 
-    // 조회
-    // List<RecipeIngredientEntity> recipeIngredients = recipeIngredientRepository.findAllIngredientsByRecipeId() -> 조회 로직에 사용할 것
-    public Page<PostDto> getRecipeList (Pageable pageable) {
+    /* 게시글 전체 조회*/
+    public List<PostDto> getRecipeList() {
 
-        Page<PostEntity> postEntityList = postRepository.findAll(pageable);
-        Page<PostDto> postDtoList = PostDto.toDtoPage(postEntityList);
+        List<PostEntity> postEntityList = postRepository.findAll();
+        List<PostDto> postDtoList = PostDto.toDtoList(postEntityList);
         return postDtoList;
     }
 
-    // 게시글 상세조회
+    /* 게시글 상세조회 */
     public PostDto getPostDetail(Long postId) {
         PostEntity post = postRepository.findById(postId)
                                         .orElseThrow(() -> new AppException(ErrorCode.POST_NOT_FOUND, "게시물이 존재하지 않습니다."));

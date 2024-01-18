@@ -70,11 +70,9 @@ public class PostController {
 
     // 게시글 리스트 조회
     @GetMapping("")
-    public Response<Page<PostDto>> getAllRecipeList(@PageableDefault(size = 20)
-                                                    @SortDefault (sort = "createdAt", direction = Direction.DESC)
-                                                    Pageable pageable) {
+    public Response<List<PostDto>> getAllRecipeList() {
 
-        Page<PostDto> postDtoList = postService.getRecipeList(pageable);
+        List<PostDto> postDtoList = postService.getRecipeList();
 
         return Response.success(postDtoList);
     }
