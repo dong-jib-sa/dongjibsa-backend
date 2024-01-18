@@ -17,15 +17,15 @@ import org.springframework.web.multipart.MultipartFile;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RegisterPostRequest {
 
+    private Long memberId; // 유저 id값
+
     private String title; // 글 제목
-    private String userName; // 작성자 이름
-    private String recipeName; // 레시피 이름
+    private String content; // 내용
+    private String recipeName; // 레시피명
     private Integer expectingPrice; // 예상 가격
     private Integer pricePerOne; // 1인 당 예상 가격
     private Integer peopleCount; // 파티원 수
-    private String dong; // 위치 dto
     private List<PostIngredientRequest> ingredients; // 게시글 재료 목록
-    private String content; // 내용
     private MultipartFile image; // 레시피 사진
 
 }
