@@ -1,5 +1,6 @@
 package com.djs.dongjibsabackend.domain.dto.ingredient;
 
+import com.djs.dongjibsabackend.domain.entity.IngredientEntity;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,4 +19,10 @@ public class IngredientDto {
         this.name = name;
     }
 
+    public static IngredientEntity toEntity(IngredientDto ingredientDto) {
+
+        return IngredientEntity.builder()
+                               .ingredientName(ingredientDto.getName())
+                               .build();
+    }
 }
