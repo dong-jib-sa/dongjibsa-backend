@@ -7,12 +7,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "recipe_calorie")
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RecipeCalorieEntity {
 
     @Id
@@ -22,4 +24,10 @@ public class RecipeCalorieEntity {
     private String recipeName;
     private double calorie;
 
+    @Builder
+    public RecipeCalorieEntity(Long id, String recipeName, double calorie) {
+        this.id = id;
+        this.recipeName = recipeName;
+        this.calorie = calorie;
+    }
 }

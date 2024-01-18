@@ -1,10 +1,12 @@
 package com.djs.dongjibsabackend.service;
 
+import com.djs.dongjibsabackend.domain.dto.ingredient.IngredientDto;
 import com.djs.dongjibsabackend.domain.dto.post.PostDto;
+import com.djs.dongjibsabackend.domain.dto.post.PostResponse;
 import com.djs.dongjibsabackend.domain.dto.post.RegisterPostRequest;
 import com.djs.dongjibsabackend.domain.dto.post_ingredient.PostIngredientRequest;
+import com.djs.dongjibsabackend.domain.dto.recipe_calorie.RecipeCalorieDto;
 import com.djs.dongjibsabackend.domain.entity.IngredientEntity;
-import com.djs.dongjibsabackend.domain.entity.LocationEntity;
 import com.djs.dongjibsabackend.domain.entity.PostEntity;
 import com.djs.dongjibsabackend.domain.entity.PostIngredientEntity;
 import com.djs.dongjibsabackend.domain.entity.RecipeCalorieEntity;
@@ -12,14 +14,16 @@ import com.djs.dongjibsabackend.domain.entity.MemberEntity;
 import com.djs.dongjibsabackend.exception.AppException;
 import com.djs.dongjibsabackend.exception.ErrorCode;
 import com.djs.dongjibsabackend.repository.IngredientRepository;
-import com.djs.dongjibsabackend.repository.LocationRepository;
 import com.djs.dongjibsabackend.repository.PostIngredientRepository;
 import com.djs.dongjibsabackend.repository.PostRepository;
 import com.djs.dongjibsabackend.repository.RecipeCalorieRepository;
 import com.djs.dongjibsabackend.repository.MemberRepository;
+import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import javax.swing.text.html.Option;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -39,128 +43,89 @@ public class PostService {
     private final IngredientRepository ingredientRepository;
     private final RecipeCalorieRepository recipeCalorieRepository;
     private final PostImageService postImageService;
+    private final double defaultCalorie = 0.0;
 
+    @Transactional
     public PostDto register (RegisterPostRequest req) throws MissingServletRequestPartException {
 
-        // LocationEntity validateLocation = locationRepository.findLocationByDong(req.getDong());
+        /* memberId */
+        MemberEntity writer = memberRepository.findById(req.getMemberId())
+            .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND, String.format("%d는 존재하지 않는 유저입니다.", req.getMemberId())));
+        log.info("writer: {}", writer.getId()); // PASS
 
-        MemberEntity validateUser = memberRepository.findByNickName("지예로운사람");
-
-        List<PostIngredientEntity> ingredients = new ArrayList<>();
-
-        RecipeCalorieEntity recipeCalorieEntity = recipeCalorieRepository.findByRecipeName(req.getRecipeName());
-
+        /* 게시글 엔티티 생성 */
+        /**
+         * title, content, expectingPrice, pricePerOne, member, recipeCalorie, peopleCount
+         */
         PostEntity savedPost = PostEntity.builder()
-                                           .title(req.getTitle())
-                                           .content(req.getContent())
-                                           .expectingPrice(req.getExpectingPrice())
-                                           .pricePerOne(req.getPricePerOne())
-                                           .member(validateUser)
-                                           .recipeCalorie(recipeCalorieEntity)
-                                           .peopleCount(req.getPeopleCount())
-                                           // .location(validateLocation)
-                                           .build();
+                                         .title(req.getTitle())
+                                         .content(req.getContent())
+                                         .expectingPrice(req.getExpectingPrice())
+                                         .pricePerOne(req.getPricePerOne())
+                                         .member(writer)
+                                         .peopleCount(req.getPeopleCount())
+                                         .build();
+        log.info("savedPost: {}", savedPost.getTitle()); // PASS
 
+        /* 새로 입력된 레시피와 칼로리
+        레시피 db에 존재하면 칼로리 입력, 없으면 0으로 계산하는 로직 작성 */
+        String recipeName = req.getRecipeName();
+        log.info("recipeName: {}", recipeName); // PASS
+
+        RecipeCalorieDto recipeCalorieDto = RecipeCalorieDto.builder()
+                                                            .recipeName(recipeName)
+                                                            .calorie(defaultCalorie)
+                                                            .build();
+
+        RecipeCalorieEntity recipeCalorieEntity = recipeCalorieRepository.findByRecipeName(recipeName)
+                                                                         .orElseGet(() -> recipeCalorieRepository.save(RecipeCalorieDto.toEntity(recipeCalorieDto)));
+
+        savedPost.updateRecipeCalorie(recipeCalorieEntity);
+
+        /* 재료 리스트 엔티티 생성 (List<PostIngredientEntity>)*/
+        List<PostIngredientEntity> ingredients = new ArrayList<>();
         List<PostIngredientRequest> dtos = req.getIngredients();
 
+        /* 요청의 재료가 DB에 없으면 dto를 엔티티로 변환하여 사용한다. */
         for (PostIngredientRequest ingredient: dtos) {
-            IngredientEntity ingredientEntity = ingredientRepository.findByIngredientName(ingredient.getIngredientName())
-                .orElseThrow(() -> new AppException(ErrorCode.INGREDIENT_NOT_AVAILABLE, "해당 재료는 입력할 수 없습니다."));
+            IngredientDto ingredientDto = IngredientDto.builder()
+                                                       .name(ingredient.getIngredientName())
+                                                       .build();
 
-            if (ingredientEntity != null) {
-                PostIngredientEntity postIngredientEntity =
-                    PostIngredientEntity.addIngredientToPost (savedPost, // 재료 리스트가 비어 있는 레시피 객체
-                                                              ingredientEntity,
-                                                              ingredient.getTotalQty(),
-                                                              ingredient.getRequiredQty(),
-                                                              ingredient.getSharingAvailableQty());
-                ingredients.add(postIngredientEntity);
-            }
+            /*IngredientEntity*/
+            IngredientEntity ingredientEntity = ingredientRepository.findByIngredientName(ingredient.getIngredientName())
+                                                                    .orElseGet(() ->ingredientRepository.save(IngredientDto.toEntity(ingredientDto)));
+
+            /* 게시글, 재료, 수량데이터 엔티티 생성 (PostIngredientEntity)*/
+            IngredientEntity savedIngredient = ingredientRepository.save(ingredientEntity);
+            PostIngredientEntity postIngredientEntity =
+                PostIngredientEntity.addIngredientToPost (savedPost,
+                                                          savedIngredient,
+                                                          ingredient.getTotalQty(),
+                                                          ingredient.getRequiredQty(),
+                                                          ingredient.getSharingAvailableQty());
+            ingredients.add(postIngredientEntity);
         }
 
-        // 재료 목록 저장
+        /* 게시글에 재료 리스트 저장 */
         savedPost.updatePostIngredients(ingredients);
 
+        /* 요청에 사진 파일이 있는 경우 업로드 (imgUrl) */
         if (req.getImage() != null) {
-
             String imgUrl = postImageService.uploadAndSaveToDB(req.getImage(), savedPost.getId());
-
             savedPost.updatePostImageUrl(imgUrl);
-
-            postRepository.save(savedPost);
-
-            // entity -> dto
-            PostDto savedPostDto = PostDto.toDto(savedPost);
-
-            return savedPostDto;
-
-        } else {
-
-            postRepository.save(savedPost);
-
-            PostDto savedPostDto = PostDto.toDto(savedPost);
-
-            return savedPostDto;
         }
-    }
-
-//    public PostDto register(WritePostRequest writePostRequest) {
-//
-//        // 동 이름을 기준으로 Location 객체 생성
-//        LocationEntity validateLocation = locationRepository.findLocationByDong(writePostRequest.getDong());
-//
-//        // 사용자가 입력한 이름으로 User 객체 생성
-//        // UserEntity validateUser = userRepository.findByUserName(writePostRequest.getUserName());
-//        UserEntity validateUser = userRepository.findByUserName("박보검");
-//
-//        // RecipyIngredientEntity 리스트 생성
-//        List<PostIngredientEntity> ingredients = new ArrayList<>();
-//
-//        // 입력 받은 레시피 이름으로 recpiecalorie 엔티티 생성
-//        String recipeName = writePostRequest.getRecipeName();
-//        RecipeCalorieEntity recipeCalorieEntity = recipeCalorieRepository.findByRecipeName(recipeName);
-//
-//        // 레시피 엔터티 생성
-//        PostEntity savedPost = PostEntity.builder()
-//                                           .title(writePostRequest.getTitle())
-//                                           .content(writePostRequest.getContent())
-//                                           .expectingPrice(writePostRequest.getExpectingPrice())
-//                                           .pricePerOne(writePostRequest.getPricePerOne())
-//                                           .user(validateUser)
-//                                           .recipeCalorie(recipeCalorieEntity)
-//                                           .peopleCount(writePostRequest.getPeopleCount())
-//                                           .location(validateLocation)
-//                                           .imgUrl(writePostRequest.getImgUrl())
-//                                           .build();
-//
-//        // request 내 입력된 재료
-//        List<PostIngredientDto> dtoList = writePostRequest.getPostIngredientDtos();
-//
-//        // 재료 dto 리스트를 순회하며 레시피 재료 리스트를 채운다.
-//        for (PostIngredientDto dto: dtoList) {
-//            // 재료명으로 재료 코드 조회
-//            IngredientEntity ingredientEntity = ingredientRepository.findByIngredientName(dto.getIngredientName())
-//                .orElseThrow(() -> new AppException(ErrorCode.INGREDIENT_NOT_AVAILABLE, "해당 재료는 입력할 수 없습니다."));
-//
-//            if (ingredientEntity != null) {
-//                PostIngredientEntity postIngredientEntity =
-//                    PostIngredientEntity.addIngredientToPost (savedPost, // 재료 리스트가 비어 있는 레시피 객체
-//                                                               ingredientEntity,
-//                                                               dto.getTotalQty(),
-//                                                               dto.getRequiredQty(),
-//                                                               dto.getSharingAvailableQty());
-//                ingredients.add(postIngredientEntity);
-//            }
+//       else {
+//            postRepository.save(savedPost);
+//            PostDto savedPostDto = PostDto.toDto(savedPost);
+//            return savedPostDto;
 //        }
-//
-//        savedPost.updatePostIngredients(ingredients);
-//
-//        postRepository.save(savedPost); // db에 저장
-//
-//        PostDto savedPostDto = PostDto.toDto(savedPost);
-//
-//        return savedPostDto;
-//    }
+
+        postRepository.save(savedPost);
+        PostDto savedPostDto = PostDto.toDto(savedPost);
+
+        return savedPostDto;
+    }
 
     /* 게시글 전체 조회*/
     public List<PostDto> getRecipeList() {

@@ -9,6 +9,9 @@ import lombok.Setter;
 @Setter
 public class PostIngredientRequest {
 
+    /**
+     *  재료 이름, 구매 수량, 필요 수량, 판매 수량
+     */
     private String ingredientName;
     private double totalQty;
     private double requiredQty;

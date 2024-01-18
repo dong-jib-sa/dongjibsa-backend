@@ -52,8 +52,8 @@ public class PostEntity extends BaseEntity {
     // 재료-수량 객체 리스트
     @OneToMany(mappedBy = "post", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<PostIngredientEntity> recipeIngredients = new ArrayList<>();
-    private String imgUrl; // 레시피 이미지 Url
 
+    private String imgUrl; // 레시피 이미지 Url
 
     @Builder
     public PostEntity(Long id, String title, String content,
@@ -76,13 +76,19 @@ public class PostEntity extends BaseEntity {
         this.imgUrl = imgUrl;
     }
 
-    // --- 연관 관계 메서드 --- //
+    // ** Methods
+    /* 1. 재료 목록 업데이트 */
     public void updatePostIngredients(List<PostIngredientEntity> recipeIngredients) {
         this.recipeIngredients = recipeIngredients;
     }
 
-    // --- 이미지 url 업데이트 메서드 --- //
+    /* 2. S3 Url 업데이트 */
     public void updatePostImageUrl(String s3FileUrl) {
         this.imgUrl = s3FileUrl;
+    }
+
+    /* 3. 칼로리 업데이트 */
+    public void updateRecipeCalorie(RecipeCalorieEntity recipeCalorieEntity) {
+        this.recipeCalorie = recipeCalorieEntity;
     }
 }
