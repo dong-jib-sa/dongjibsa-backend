@@ -1,6 +1,8 @@
 package com.djs.dongjibsabackend.domain.entity;
 
 
+import com.djs.dongjibsabackend.domain.dto.image.ImageDto;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -53,7 +55,9 @@ public class PostEntity extends BaseEntity {
     @OneToMany(mappedBy = "post", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<PostIngredientEntity> recipeIngredients = new ArrayList<>();
 
-    private String imgUrl; // 레시피 이미지 Url
+    @JsonIgnore
+    @OneToMany(mappedBy = "post", orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<ImageEntity> imgUrls; // 레시피 이미지 Url
 
     @Builder
     public PostEntity(Long id, String title, String content,
@@ -62,7 +66,7 @@ public class PostEntity extends BaseEntity {
                       Integer peopleCount,
                       // LocationEntity location,
                       List<PostIngredientEntity> recipeIngredients,
-                      String imgUrl) {
+                      List<ImageEntity> imgUrls) {
         this.id = id;
         this.title = title;
         this.content = content;
@@ -73,7 +77,7 @@ public class PostEntity extends BaseEntity {
         this.peopleCount = peopleCount;
         // this.location = location;
         this.recipeIngredients = recipeIngredients;
-        this.imgUrl = imgUrl;
+        this.imgUrls = imgUrls;
     }
 
     // ** Methods
@@ -83,8 +87,8 @@ public class PostEntity extends BaseEntity {
     }
 
     /* 2. S3 Url 업데이트 */
-    public void updatePostImageUrl(String s3FileUrl) {
-        this.imgUrl = s3FileUrl;
+    public void updatePostImageUrl(List<ImageEntity> urls) {
+        this.imgUrls = urls;
     }
 
     /* 3. 칼로리 업데이트 */

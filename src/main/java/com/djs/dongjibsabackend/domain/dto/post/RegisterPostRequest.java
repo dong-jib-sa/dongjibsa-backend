@@ -26,6 +26,7 @@ public class RegisterPostRequest {
     private Integer pricePerOne; // 1인 당 예상 가격
     private Integer peopleCount; // 파티원 수
     private List<PostIngredientRequest> ingredients; // 게시글 재료 목록
-    private MultipartFile image; // 레시피 사진
+//    private MultipartFile image; // 레시피 사진
+    private List<MultipartFile> images; // 레시피 사진
 
 }
