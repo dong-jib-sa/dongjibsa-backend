@@ -5,7 +5,7 @@ import com.djs.dongjibsabackend.domain.dto.post.PostDetailResponse;
 import com.djs.dongjibsabackend.domain.dto.post.PostDto;
 import com.djs.dongjibsabackend.domain.dto.post.PostResponse;
 import com.djs.dongjibsabackend.domain.dto.post.RegisterPostRequest;
-import com.djs.dongjibsabackend.domain.dto.post.WritePostRequest;
+import com.djs.dongjibsabackend.domain.dto.post.RegisterPostResponse;
 import com.djs.dongjibsabackend.repository.PostRepository;
 import com.djs.dongjibsabackend.service.PostImageService;
 import com.djs.dongjibsabackend.service.PostService;
@@ -47,13 +47,20 @@ public class PostController {
         consumes = {"multipart/form-data"}
         ,headers = ("content-type=multipart/*")
     )
-    public Response registerPost(@ModelAttribute RegisterPostRequest req) throws IOException, MissingServletRequestPartException {
+    public Response<RegisterPostResponse> registerPost(@ModelAttribute RegisterPostRequest req) throws IOException,
+        MissingServletRequestPartException {
 
         PostDto postDto = postService.register(req);
-
         log.info("등록된 게시글 ID:" + postDto.getId());
-
-        return Response.success(postDto);
+        boolean includeCalorie = false;
+        if (postDto.getRecipeCalorie().getCalorie() > 0.0) {
+            includeCalorie = true;
+        }
+        RegisterPostResponse response = RegisterPostResponse.builder()
+                                                            .postDto(postDto)
+                                                            .includeCalorie(includeCalorie)
+                                                            .build();
+        return Response.success(response);
     }
 
 //    @PostMapping(path = "/new",
