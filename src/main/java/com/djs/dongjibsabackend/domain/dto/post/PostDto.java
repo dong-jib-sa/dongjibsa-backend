@@ -1,7 +1,9 @@
 package com.djs.dongjibsabackend.domain.dto.post;
 
+import com.djs.dongjibsabackend.domain.dto.image.ImageDto;
 import com.djs.dongjibsabackend.domain.dto.post_ingredient.PostIngredientDto;
 import com.djs.dongjibsabackend.domain.dto.recipe_calorie.RecipeCalorieDto;
+import com.djs.dongjibsabackend.domain.entity.ImageEntity;
 import com.djs.dongjibsabackend.domain.entity.LocationEntity;
 import com.djs.dongjibsabackend.domain.entity.PostEntity;
 import com.djs.dongjibsabackend.domain.entity.PostIngredientEntity;
@@ -15,6 +17,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.util.CollectionUtils;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -30,7 +33,8 @@ public class PostDto {
     private Integer peopleCount;
     // private LocationEntity location;
     private List<PostIngredientDto> recipeIngredients;
-    private String imgUrl;
+//    private List<ImageEntity> imgUrls;
+    private List<String> imgUrls;
     private Integer commentsCount;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -39,7 +43,7 @@ public class PostDto {
     public PostDto (Long id, String title, String content, Integer expectingPrice, Integer pricePerOne, MemberEntity member,
                     RecipeCalorieDto recipeCalorie, Integer peopleCount,
                     // LocationEntity location,
-                    List<PostIngredientDto> recipeIngredients, String imgUrl,
+                    List<PostIngredientDto> recipeIngredients, List<String> imgUrls,
                     Integer commentsCount, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.title = title;
@@ -51,7 +55,7 @@ public class PostDto {
         this.peopleCount = peopleCount;
         // this.location = location;
         this.recipeIngredients = recipeIngredients;
-        this.imgUrl = imgUrl;
+        this.imgUrls = imgUrls;
         this.commentsCount = commentsCount;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -66,24 +70,43 @@ public class PostDto {
 
         // entity list -> dto list
         List<PostIngredientDto> postIngredientDtoList = entities.stream().map(PostIngredientDto::of).collect(Collectors.toList());
-
         RecipeCalorieDto recipeCalorieDto = RecipeCalorieDto.of((post.getRecipeCalorie()));
 
-        return PostDto.builder()
-                      .id(post.getId())
-                      .title(post.getTitle())
-                      .content(post.getContent())
-                      .expectingPrice(post.getExpectingPrice())
-                      .pricePerOne(post.getPricePerOne())
-                      .member(post.getMember())
-                      .recipeCalorie(recipeCalorieDto)
-                      .peopleCount(post.getPeopleCount())
-                      // .location(post.getLocation())
-                      .recipeIngredients(postIngredientDtoList)
-                      .imgUrl(post.getImgUrl())
-                      .createdAt(post.getCreatedAt())
-                      .updatedAt(post.getUpdatedAt())
-                      .build();
+        List<ImageEntity> images = post.getImgUrls();
+        if (CollectionUtils.isEmpty(images)) { // images에 데이터가 없다면, String으로 만든다.
+            return PostDto.builder()
+                          .id(post.getId())
+                          .title(post.getTitle())
+                          .content(post.getContent())
+                          .expectingPrice(post.getExpectingPrice())
+                          .pricePerOne(post.getPricePerOne())
+                          .member(post.getMember())
+                          .recipeCalorie(recipeCalorieDto)
+                          .peopleCount(post.getPeopleCount())
+                          // .location(post.getLocation())
+                          .recipeIngredients(postIngredientDtoList)
+                          // .imgUrls(urls)
+                          .createdAt(post.getCreatedAt())
+                          .updatedAt(post.getUpdatedAt())
+                          .build();
+        } else {
+            List<String> urls = ImageDto.of(images);
+            return PostDto.builder()
+                          .id(post.getId())
+                          .title(post.getTitle())
+                          .content(post.getContent())
+                          .expectingPrice(post.getExpectingPrice())
+                          .pricePerOne(post.getPricePerOne())
+                          .member(post.getMember())
+                          .recipeCalorie(recipeCalorieDto)
+                          .peopleCount(post.getPeopleCount())
+                          // .location(post.getLocation())
+                          .recipeIngredients(postIngredientDtoList)
+                          .imgUrls(urls)
+                          .createdAt(post.getCreatedAt())
+                          .updatedAt(post.getUpdatedAt())
+                          .build();
+        }
     }
 
     public static List<PostDto> toDtoList (List<PostEntity> entityList) {
@@ -93,23 +116,6 @@ public class PostDto {
             PostDto dto = PostDto.toDto(entity);
             dtoList.add(dto);
         }
-        return dtoList;
-    }
-
-    public static Page<PostDto> toDtoPage(Page<PostEntity> postEntities) {
-        Page<PostDto> dtoList = postEntities.map(m -> PostDto.builder()
-                                                             .id(m.getId())
-                                                             .title(m.getTitle())
-                                                             .content(m.getContent())
-                                                             .expectingPrice(m.getExpectingPrice())
-                                                             .pricePerOne(m.getPricePerOne())
-                                                             .member(m.getMember())
-                                                             .recipeCalorie(RecipeCalorieDto.of(m.getRecipeCalorie()))
-                                                             .peopleCount(m.getPeopleCount())
-                                                             .imgUrl(m.getImgUrl())
-                                                             .createdAt(m.getCreatedAt())
-                                                             .updatedAt(m.getUpdatedAt())
-                                                             .build());
         return dtoList;
     }
 }

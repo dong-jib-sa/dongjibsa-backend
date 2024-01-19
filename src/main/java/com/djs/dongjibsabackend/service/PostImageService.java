@@ -4,13 +4,18 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.djs.dongjibsabackend.domain.dto.image.ImageDto;
 import com.djs.dongjibsabackend.domain.dto.post.PostDto;
+import com.djs.dongjibsabackend.domain.entity.ImageEntity;
 import com.djs.dongjibsabackend.domain.entity.PostEntity;
 import com.djs.dongjibsabackend.exception.AppException;
 import com.djs.dongjibsabackend.exception.ErrorCode;
+import com.djs.dongjibsabackend.repository.ImageRepository;
 import com.djs.dongjibsabackend.repository.PostRepository;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +31,7 @@ public class PostImageService {
 
     private final AmazonS3Client amazonS3Client;
     private final PostRepository postRepository;
+    private final ImageRepository imageRepository;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
@@ -40,63 +46,70 @@ public class PostImageService {
         return post;
     }
 
-    public String uploadAndSaveToDB(MultipartFile multipartFile, Long postId) throws MissingServletRequestPartException {
+    public List<ImageDto> uploadAndSaveToDB(List<MultipartFile> multipartFiles, Long postId) throws MissingServletRequestPartException {
 
-        // 파일 검증
-        if (multipartFile.isEmpty()) {
-            throw new MissingServletRequestPartException("이미지가 존재하지 않습니다!");
+        List<ImageDto> imageUrls = new ArrayList<>();
+        PostEntity post = postRepository.findById(postId)
+                                        .orElseThrow(() -> new AppException(ErrorCode.POST_NOT_FOUND,
+                                                                            String.format("%s는 존재하지 않는 게시글입니다.", postId)));
+
+        for (MultipartFile file: multipartFiles) {
+
+            /* 1. 이미지 파일 검증*/
+            if (file.isEmpty()) {
+                throw new MissingServletRequestPartException("이미지가 존재하지 않습니다!");
+            }
+
+            /* 2. 파일 정보로 메타데이터 생성 */
+            ObjectMetadata objectMetadata = new ObjectMetadata();
+            objectMetadata.setContentType(file.getContentType());
+            objectMetadata.setContentLength(file.getSize());
+
+            /* 3. 파일 제목 생성 */
+            String uploadFileName = file.getOriginalFilename();
+            log.info("생성된 파일 제목: {}", uploadFileName);
+
+            /* 4. 이미지 파일 확장자 검증 */
+            int index;
+            try {
+                index = uploadFileName.lastIndexOf(".");
+            } catch (StringIndexOutOfBoundsException e) {
+                throw new AppException(ErrorCode.WRONG_FILE_FORMAT, "잘못된 파일 형식입니다.");
+            }
+
+            /* 5. 파일 확장자 추출 */
+            String extension = uploadFileName.substring(index + 1);
+            log.debug("extension:", extension);
+
+            /* 5. 3, 5를 합한 파일명 생성 */
+            String awsS3FileName = UUID.randomUUID() + "." + extension;
+            log.debug("awsS3FileName:", awsS3FileName);
+
+            String key = "postImg/" + awsS3FileName;
+            log.debug("key:", key);
+
+            /* 6. S3 서버에 이미지 파일 업로드 */
+            try (InputStream inputStream = file.getInputStream()) {
+                amazonS3Client.putObject(
+                    new PutObjectRequest(bucket, key, inputStream, objectMetadata)
+                        .withCannedAcl(CannedAccessControlList.PublicRead));
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new AppException(ErrorCode.INTERNAL_SERVER_ERROR, "통신에 실패했습니다.");
+            }
+
+            /* 7. S3 서버에 저장된 이미지 파일의 url 추출 */
+            String imageUrl = amazonS3Client.getUrl(bucket, key).toString();
+            log.debug("imageUrl: ", imageUrl);
+
+            /* 8. 이미지 엔티티 생성 */
+            ImageEntity image = ImageEntity.builder().post(post).url(imageUrl).build();
+            // ImageEntity savedImage = imageRepository.save(image); // save.
+            ImageDto imageDto = ImageDto.toDto(image);
+
+            imageUrls.add(imageDto);
         }
 
-        // 파일 정보로 메타데이터 생성
-        ObjectMetadata objectMetadata = new ObjectMetadata();
-        objectMetadata.setContentType(multipartFile.getContentType());
-        objectMetadata.setContentLength(multipartFile.getSize());
-
-        // 파일 제목
-        String uploadFileName = multipartFile.getOriginalFilename();
-        log.debug("uploadFileName", uploadFileName);
-
-        int index;
-        try {
-            index = uploadFileName.lastIndexOf(".");
-        } catch (StringIndexOutOfBoundsException e) {
-            throw new AppException(ErrorCode.WRONG_FILE_FORMAT, "잘못된 파일 형식입니다.");
-        }
-
-        // 확장자
-        String extension = uploadFileName.substring(index + 1);
-        log.debug("extension:", extension);
-
-        // 파일명 생성
-        String awsS3FileName = UUID.randomUUID() + "." + extension;
-        log.debug("awsS3FileName:", awsS3FileName);
-
-        String key = "postImg/" + awsS3FileName;
-        log.debug("key:", key);
-
-        try(InputStream inputStream = multipartFile.getInputStream()) {
-            amazonS3Client.putObject(
-                new PutObjectRequest(bucket, key, inputStream, objectMetadata)
-                    .withCannedAcl(CannedAccessControlList.PublicRead));
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new AppException(ErrorCode.INTERNAL_SERVER_ERROR, "통신에 실패했습니다.");
-        }
-
-//        String imageUrl = amazonS3Client.getResourceUrl(s3DirName, key);
-//        String fileUrl = "https://" + bucket + key;
-        String imageUrl = amazonS3Client.getUrl(bucket, key).toString();
-        log.debug("imageUrl: ", imageUrl);
-
-//        PostEntity post = validatePost(postId);
-//
-//        post.updatePostImageUrl(imageUrl);
-//
-//        // db에 저장
-//        PostEntity imageSavedPostEntity = postRepository.save(post);
-//
-//        PostDto imageSavedPostDto = PostDto.toDto(imageSavedPostEntity);
-
-        return imageUrl;
+        return imageUrls;
     }
 }

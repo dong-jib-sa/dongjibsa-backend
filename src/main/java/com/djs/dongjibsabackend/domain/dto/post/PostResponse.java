@@ -3,6 +3,7 @@ package com.djs.dongjibsabackend.domain.dto.post;
 import com.djs.dongjibsabackend.domain.dto.post_ingredient.PostIngredientDto;
 import com.djs.dongjibsabackend.domain.dto.post_ingredient.PostIngredientResponse;
 import com.djs.dongjibsabackend.domain.dto.recipe_calorie.RecipeCalorieDto;
+import com.djs.dongjibsabackend.domain.entity.ImageEntity;
 import com.djs.dongjibsabackend.domain.entity.LocationEntity;
 import com.djs.dongjibsabackend.domain.entity.PostIngredientEntity;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -33,7 +34,7 @@ public class PostResponse {
     private Integer peopleCount;
     private List<PostIngredientResponse> recipeIngredients; //List<PostIngredientDto>로 타입 변경
     private Integer commentsCount;
-    private String imgUrl;
+    private List<String> imgUrl;
     @JsonFormat(shape = Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime createdAt;
     @JsonFormat(shape = Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
@@ -59,7 +60,7 @@ public class PostResponse {
                            .calorie(calorie)
                            .peopleCount(postDto.getPeopleCount())
                            .recipeIngredients(ingredientResponse)
-                           .imgUrl(postDto.getImgUrl())
+                           .imgUrl(postDto.getImgUrls())
                            .createdAt(postDto.getCreatedAt())
                            .updatedAt(postDto.getUpdatedAt())
                            .build();
@@ -78,7 +79,7 @@ public class PostResponse {
                                              .calorie(post.getRecipeCalorie().getCalorie())
                                              .peopleCount(post.getPeopleCount())
                                              .recipeIngredients(PostIngredientResponse.of(post.getRecipeIngredients()))
-                                             .imgUrl(post.getImgUrl())
+                                             .imgUrl(post.getImgUrls())
                                              .createdAt(post.getCreatedAt())
                                              .updatedAt(post.getUpdatedAt())
                                                       .build()).collect(Collectors.toList());
@@ -95,7 +96,7 @@ public class PostResponse {
                                              .calorie(post.getRecipeCalorie().getCalorie())
                                              .peopleCount(post.getPeopleCount())
                                              .recipeIngredients(PostIngredientResponse.of(post.getRecipeIngredients()))
-                                             .imgUrl(post.getImgUrl())
+                                             .imgUrl(post.getImgUrls())
                                              .build());
     }
 }

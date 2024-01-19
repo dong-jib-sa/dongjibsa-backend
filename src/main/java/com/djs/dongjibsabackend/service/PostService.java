@@ -1,11 +1,13 @@
 package com.djs.dongjibsabackend.service;
 
+import com.djs.dongjibsabackend.domain.dto.image.ImageDto;
 import com.djs.dongjibsabackend.domain.dto.ingredient.IngredientDto;
 import com.djs.dongjibsabackend.domain.dto.post.PostDto;
 import com.djs.dongjibsabackend.domain.dto.post.PostResponse;
 import com.djs.dongjibsabackend.domain.dto.post.RegisterPostRequest;
 import com.djs.dongjibsabackend.domain.dto.post_ingredient.PostIngredientRequest;
 import com.djs.dongjibsabackend.domain.dto.recipe_calorie.RecipeCalorieDto;
+import com.djs.dongjibsabackend.domain.entity.ImageEntity;
 import com.djs.dongjibsabackend.domain.entity.IngredientEntity;
 import com.djs.dongjibsabackend.domain.entity.PostEntity;
 import com.djs.dongjibsabackend.domain.entity.PostIngredientEntity;
@@ -29,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 @Service
@@ -57,7 +60,7 @@ public class PostService {
         /**
          * title, content, expectingPrice, pricePerOne, member, recipeCalorie, peopleCount
          */
-        PostEntity savedPost = PostEntity.builder()
+        PostEntity post = PostEntity.builder()
                                          .title(req.getTitle())
                                          .content(req.getContent())
                                          .expectingPrice(req.getExpectingPrice())
@@ -65,7 +68,7 @@ public class PostService {
                                          .member(writer)
                                          .peopleCount(req.getPeopleCount())
                                          .build();
-        log.info("savedPost: {}", savedPost.getTitle()); // PASS
+        log.info("savedPost: {}", post.getTitle()); // PASS
 
         /* 새로 입력된 레시피와 칼로리
         레시피 db에 존재하면 칼로리 입력, 없으면 0으로 계산하는 로직 작성 */
@@ -80,7 +83,7 @@ public class PostService {
         RecipeCalorieEntity recipeCalorieEntity = recipeCalorieRepository.findByRecipeName(recipeName)
                                                                          .orElseGet(() -> recipeCalorieRepository.save(RecipeCalorieDto.toEntity(recipeCalorieDto)));
 
-        savedPost.updateRecipeCalorie(recipeCalorieEntity);
+        post.updateRecipeCalorie(recipeCalorieEntity);
 
         /* 재료 리스트 엔티티 생성 (List<PostIngredientEntity>)*/
         List<PostIngredientEntity> ingredients = new ArrayList<>();
@@ -99,7 +102,7 @@ public class PostService {
             /* 게시글, 재료, 수량데이터 엔티티 생성 (PostIngredientEntity)*/
             IngredientEntity savedIngredient = ingredientRepository.save(ingredientEntity);
             PostIngredientEntity postIngredientEntity =
-                PostIngredientEntity.addIngredientToPost (savedPost,
+                PostIngredientEntity.addIngredientToPost (post,
                                                           savedIngredient,
                                                           ingredient.getTotalQty(),
                                                           ingredient.getRequiredQty(),
@@ -108,23 +111,26 @@ public class PostService {
         }
 
         /* 게시글에 재료 리스트 저장 */
-        savedPost.updatePostIngredients(ingredients);
+        post.updatePostIngredients(ingredients);
+        PostEntity savedPost = postRepository.save(post); // DB에 저장
 
         /* 요청에 사진 파일이 있는 경우 업로드 (imgUrl) */
-        if (req.getImage() != null) {
-            String imgUrl = postImageService.uploadAndSaveToDB(req.getImage(), savedPost.getId());
-            savedPost.updatePostImageUrl(imgUrl);
+        if (!CollectionUtils.isEmpty(req.getImages())) {
+            List<ImageDto> imgUrls = postImageService.uploadAndSaveToDB(req.getImages(), savedPost.getId());
+            // List<ImageDto> -> List<ImageEntity>
+            List<ImageEntity> imgEntityList = ImageDto.toEntity(imgUrls, savedPost);
+            savedPost.updatePostImageUrl(imgEntityList);
+            PostEntity savedPostWithImages = postRepository.save(savedPost);
+            PostDto savedPostDto = PostDto.toDto(savedPostWithImages);
+            return savedPostDto;
+        } else {
+            // postRepository.save(savedPost);
+            PostDto savedPostDto = PostDto.toDto(savedPost);
+            return savedPostDto;
         }
-//       else {
-//            postRepository.save(savedPost);
-//            PostDto savedPostDto = PostDto.toDto(savedPost);
-//            return savedPostDto;
-//        }
 
-        postRepository.save(savedPost);
-        PostDto savedPostDto = PostDto.toDto(savedPost);
-
-        return savedPostDto;
+//        PostDto savedPostDto = PostDto.toDto(savedPostWithImages);
+//        return savedPostDto;
     }
 
     /* 게시글 전체 조회*/
