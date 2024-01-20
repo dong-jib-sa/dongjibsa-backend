@@ -46,6 +46,7 @@ public class PostImageService {
         return post;
     }
 
+    /* 파일 업로드 */
     public List<ImageDto> uploadAndSaveToDB(List<MultipartFile> multipartFiles, Long postId) throws MissingServletRequestPartException {
 
         List<ImageDto> imageUrls = new ArrayList<>();
@@ -111,5 +112,28 @@ public class PostImageService {
         }
 
         return imageUrls;
+    }
+
+    /* 파일 삭제 */
+    public String deleteFile(String url) {
+        String expression = ".com/";
+        String uuidFileName = url.substring(url.lastIndexOf(expression) + expression.length());
+        String result ="";
+        try {
+            boolean isObjectExist = amazonS3Client.doesObjectExist(bucket, uuidFileName);
+
+            if (isObjectExist) { // true
+                amazonS3Client.deleteObject(bucket, uuidFileName);
+                log.info("%s에 위치한 파일을 삭제하였습니다.", uuidFileName);
+                result = "SUCCESS";
+            } else { // file Not Exist
+                log.error("해당 파일이 존재하지 않습니다.");
+                result = "FAIL ...";
+            }
+        } catch (Exception e) {
+            log.debug("파일 삭제에 실패했습니다. {}", e);
+        }
+
+        return result;
     }
 }

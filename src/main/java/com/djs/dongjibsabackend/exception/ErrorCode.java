@@ -12,6 +12,7 @@ public enum ErrorCode {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "User Not Found."),
     DUPLICATE_PHONE_NUMBER(HttpStatus.CONFLICT, "PhoneNumber is Duplicated."),
     DUPLICATE_USER(HttpStatus.CONFLICT, "User Already Exist."),
+    USER_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "Unauthorized."),
 
     // Location ErrorCodes
     LOCATION_NOT_FOUND(HttpStatus.NOT_FOUND, "Location Not Exist."),
@@ -24,6 +25,7 @@ public enum ErrorCode {
 
     // Image ErrorCodes
     WRONG_FILE_FORMAT(HttpStatus.BAD_REQUEST, "Wrong File Format."),
+    IMAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "Images Not Exist."),
 
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Error Occurs.");
 
