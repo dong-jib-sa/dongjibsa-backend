@@ -2,6 +2,7 @@ package com.djs.dongjibsabackend.domain.entity;
 
 
 import com.djs.dongjibsabackend.domain.dto.image.ImageDto;
+import com.djs.dongjibsabackend.domain.dto.post.EditPostRequest;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -94,5 +95,17 @@ public class PostEntity extends BaseEntity {
     /* 3. 칼로리 업데이트 */
     public void updateRecipeCalorie(RecipeCalorieEntity recipeCalorieEntity) {
         this.recipeCalorie = recipeCalorieEntity;
+    }
+
+    /* 4. 게시글 수정 */
+    public void updatePost(EditPostRequest editPostRequest) {
+        this.title = editPostRequest.getTitle();
+        this.content = editPostRequest.getTitle();
+        this.expectingPrice = editPostRequest.getExpectingPrice();
+        this.pricePerOne = editPostRequest.getPricePerOne();
+        // this.recipeCalorie = editPostRequest.get
+        this.peopleCount = editPostRequest.getPeopleCount();
+        // 게시글 재료 목록
+        // 레시피 사진
     }
 }

@@ -2,6 +2,7 @@ package com.djs.dongjibsabackend.service;
 
 import com.djs.dongjibsabackend.domain.dto.image.ImageDto;
 import com.djs.dongjibsabackend.domain.dto.ingredient.IngredientDto;
+import com.djs.dongjibsabackend.domain.dto.post.EditPostRequest;
 import com.djs.dongjibsabackend.domain.dto.post.PostDto;
 import com.djs.dongjibsabackend.domain.dto.post.PostResponse;
 import com.djs.dongjibsabackend.domain.dto.post.RegisterPostRequest;
@@ -15,6 +16,7 @@ import com.djs.dongjibsabackend.domain.entity.RecipeCalorieEntity;
 import com.djs.dongjibsabackend.domain.entity.MemberEntity;
 import com.djs.dongjibsabackend.exception.AppException;
 import com.djs.dongjibsabackend.exception.ErrorCode;
+import com.djs.dongjibsabackend.repository.ImageRepository;
 import com.djs.dongjibsabackend.repository.IngredientRepository;
 import com.djs.dongjibsabackend.repository.PostIngredientRepository;
 import com.djs.dongjibsabackend.repository.PostRepository;
@@ -23,13 +25,8 @@ import com.djs.dongjibsabackend.repository.MemberRepository;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import javax.swing.text.html.Option;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
@@ -41,10 +38,11 @@ public class PostService {
 
     private final MemberRepository memberRepository;
     private final PostRepository postRepository;
-
     private final PostIngredientRepository postIngredientRepository;
     private final IngredientRepository ingredientRepository;
     private final RecipeCalorieRepository recipeCalorieRepository;
+    private final ImageRepository imageRepository;
+
     private final PostImageService postImageService;
     private final double defaultCalorie = 0.0;
 
@@ -112,7 +110,9 @@ public class PostService {
 
         /* 게시글에 재료 리스트 저장 */
         post.updatePostIngredients(ingredients);
-        PostEntity savedPost = postRepository.save(post); // DB에 저장
+
+        /* DB에 저장 */
+        PostEntity savedPost = postRepository.save(post);
 
         /* 요청에 사진 파일이 있는 경우 업로드 (imgUrl) */
         if (!CollectionUtils.isEmpty(req.getImages())) {
@@ -128,9 +128,6 @@ public class PostService {
             PostDto savedPostDto = PostDto.toDto(savedPost);
             return savedPostDto;
         }
-
-//        PostDto savedPostDto = PostDto.toDto(savedPostWithImages);
-//        return savedPostDto;
     }
 
     /* 게시글 전체 조회*/
@@ -147,5 +144,103 @@ public class PostService {
                                         .orElseThrow(() -> new AppException(ErrorCode.POST_NOT_FOUND, "게시물이 존재하지 않습니다."));
         PostDto postDto = PostDto.toDto(post);
         return postDto;
+    }
+
+    /* 게시글 수정 */
+    public PostDto editPost(Long postId, EditPostRequest editPostRequest) throws MissingServletRequestPartException {
+
+        /* 작성자 검증 */
+        MemberEntity writer = memberRepository.findById(editPostRequest.getMemberId())
+                                              .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND, String.format("%s는 존재하지 않는 " +
+                                                                                                                              "회원입니다.",
+                                                                                                                          editPostRequest.getMemberId())));
+
+        /* 게시글 작성자 일치 여부 검증*/
+        PostEntity originalPost = postRepository.findById(postId)
+                                                .orElseThrow(() -> new AppException(ErrorCode.POST_NOT_FOUND,
+                                                                                    String.format("%s는 존재하지 않는 게시글입니다.", postId)));
+
+        /* 요청 유저가 게시글 작성자인지 검증 */
+        if (!originalPost.getMember().getId().equals(writer.getId())) {
+            throw new AppException(ErrorCode.USER_UNAUTHORIZED, String.format("수정 권한이 없습니다."));
+        }
+
+        /* 요청 내용으로 게시글 내용 변경 */
+        originalPost.updatePost(editPostRequest);
+
+        /* 1. 레시피명 변경 */
+        String updatedRecipeName = editPostRequest.getRecipeName();
+        log.info("updatedRecipeName: {}", updatedRecipeName);
+        RecipeCalorieDto updatedRecipeCalorieDto = RecipeCalorieDto.builder()
+                                                            .recipeName(updatedRecipeName)
+                                                            .calorie(defaultCalorie) // 0.0
+                                                            .build();
+        RecipeCalorieEntity recipeCalorieEntity = recipeCalorieRepository.findByRecipeName(updatedRecipeName)
+                                                                         .orElseGet(() -> recipeCalorieRepository.save(RecipeCalorieDto.toEntity(updatedRecipeCalorieDto)));
+
+        originalPost.updateRecipeCalorie(recipeCalorieEntity);
+
+        /* 2. 재료 변경 */
+
+        // List<PostIngredientEntity> updatedIngredients = new ArrayList<>();
+        List<PostIngredientEntity> ingredients = originalPost.getRecipeIngredients();
+        ingredients.clear(); // 객체를 그대로 이용하기 위해 그대로 삭제..
+        List<PostIngredientRequest> updatedIngredientDtoList = editPostRequest.getIngredients();
+        for (PostIngredientRequest ingredient: updatedIngredientDtoList) {
+            IngredientDto ingredientDto = IngredientDto.builder()
+                                                       .name(ingredient.getIngredientName())
+                                                       .build();
+
+            /*IngredientEntity*/
+            IngredientEntity ingredientEntity = ingredientRepository.findByIngredientName(ingredient.getIngredientName())
+                                                                    .orElseGet(() ->ingredientRepository.save(IngredientDto.toEntity(ingredientDto)));
+
+            /* 게시글, 재료, 수량데이터 엔티티 생성 (PostIngredientEntity)*/
+            IngredientEntity savedIngredient = ingredientRepository.save(ingredientEntity);
+            PostIngredientEntity postIngredientEntity =
+                PostIngredientEntity.addIngredientToPost (originalPost,
+                                                          savedIngredient,
+                                                          ingredient.getTotalQty(),
+                                                          ingredient.getRequiredQty(),
+                                                          ingredient.getSharingAvailableQty());
+            ingredients.add(postIngredientEntity);
+        }
+        originalPost.updatePostIngredients(ingredients);
+
+        /* 3. 이미지 변경 */
+
+        if (CollectionUtils.isEmpty(editPostRequest.getImages())) { // 변경한 image 없음
+            // keep going
+            /* 변경된 포스트를 DB에 저장 */
+            PostEntity editedPost = postRepository.save(originalPost);
+            return PostDto.toDto(editedPost);
+        } else {
+            List<ImageEntity> originalImages =
+                imageRepository.findAllByPostId(postId).orElseThrow(() -> new AppException(ErrorCode.IMAGE_NOT_FOUND,
+                                                                                           String.format("%d번 게시글의 이미지가 존재하지 않습니다.", postId)));
+            // 원래 Post에서 저장한 이미지를 삭제한다.
+            for(ImageEntity image: originalImages) {
+                postImageService.deleteFile(image.getUrl());
+            }
+
+            // 요청 내 이미지를 새롭게 저장하는 List<ImageEntity>를 만든다.
+            List<ImageDto> newImageDtos = postImageService.uploadAndSaveToDB(editPostRequest.getImages(), postId);
+            List<ImageEntity> newImages = ImageDto.toEntity(newImageDtos, originalPost);
+
+            // DB 저장
+            originalPost.updatePostImageUrl(newImages);
+            PostEntity editedPostWithNewImages = postRepository.save(originalPost);
+            return PostDto.toDto(editedPostWithNewImages);
+        }
+    }
+
+    /* 게시글 삭제 */
+    @Transactional
+    public String deletePost(Long postId) {
+        PostEntity postEntity = postRepository.findById(postId).orElseThrow(() -> new AppException(ErrorCode.POST_NOT_FOUND,
+                                                                                                   String.format("%d는 존재하지 않는 게시물입니다.",
+                                                                                                                 postId)));
+        postRepository.deleteById(postId);
+        return String.format("%d번 게시글이 삭제되었습니다.", postId);
     }
 }

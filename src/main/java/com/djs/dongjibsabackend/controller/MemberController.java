@@ -5,16 +5,21 @@ import com.djs.dongjibsabackend.domain.dto.member.OAuthMemberRequest;
 import com.djs.dongjibsabackend.domain.dto.Response;
 import com.djs.dongjibsabackend.domain.dto.member.PhoneNumberMemberRequest;
 import com.djs.dongjibsabackend.domain.enums.SocialType;
+import com.djs.dongjibsabackend.repository.PostRepository;
 import com.djs.dongjibsabackend.service.MemberService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
+@Tag(name = "회원 API", description = "회원가입 및 탈퇴를 구현한 API")
 @RestController
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
@@ -70,5 +75,12 @@ public class MemberController {
     public Response registerOAuthUser(@RequestBody OAuthMemberRequest oAuthMemberRequest) {
         MemberDto memberDto = memberService.saveOAuthUser(oAuthMemberRequest);
         return Response.success(memberDto);
+    }
+
+    /* 회원 탈퇴 */
+    @DeleteMapping("/{memberId}")
+    public Response delete(@PathVariable Long memberId) {
+        String result = memberService.deleteMember(memberId);
+        return Response.success(result);
     }
 }

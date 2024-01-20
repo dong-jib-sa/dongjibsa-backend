@@ -28,15 +28,16 @@ public class MyPageService {
     private final PostIngredientRepository postIngredientRepository;
     private final PostRepository postRepository;
 
-    public MemberEntity findUserById(Long userId) {
-        return memberRepository.findById(userId).orElseThrow(
+    /* 회원 검증 */
+    public MemberEntity findMemberById(Long memberId) {
+        return memberRepository.findById(memberId).orElseThrow(
             () -> new AppException(ErrorCode.USER_NOT_FOUND, "존재하지 않는 사용자입니다."));
     }
 
-    // public List<PostDto> getMyPostList(Long userId) {
-    public List<PostDto> getMyPostList() {
+    /* 내가 작성한 게시글 조회 */
+    public List<PostDto> getMyPostList(Long memberId) {
         // 유저가 작성한 Post 리스트 객체 생성
-        List<PostEntity> postEntityList = postRepository.findAllByMemberId(3L);
+        List<PostEntity> postEntityList = postRepository.findAllByMemberId(memberId);
 
         // PostDto 리스트로 변환
         List<PostDto> postDtoList = postEntityList.stream().map(PostDto::toDto).collect(Collectors.toList());
@@ -44,10 +45,10 @@ public class MyPageService {
         return postDtoList;
     }
 
-    // public MyIndicatorResponse calculate(Long userId) {
-    public MyIndicatorResponse calculate() {
-        MemberEntity user = findUserById(3L); // 유저
-        MemberDto memberDto = MemberDto.toDto(user); // 유저 -> dto
+    /* 마이페이지 지표 계산 */
+    public MyIndicatorResponse calculate(Long memberId) {
+        MemberEntity member = findMemberById(memberId); // 유저
+        MemberDto memberDto = MemberDto.toDto(member); // 유저 -> dto
 
         // 유저가 작성한 PostList
         List<PostDto> postDtoList = memberDto.getPostDtoList(); // [{1, [[재료, 나눔수량], [재료, 나눔수량], [재료, 나눔수량], 제목, 내용, ...},
@@ -93,8 +94,6 @@ public class MyPageService {
 
         // ------------------------ 총 나눔 건수 ------------------------
         double sumOfSharingAvailableQtyPerUser = sumOfSharingAvailableQtyPerPost.stream().reduce((double) 0, (a, b) -> a+b);
-
-
 
         return MyIndicatorResponse.builder()
                                   .calorieAvg(calorieAvg)

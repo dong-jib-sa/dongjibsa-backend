@@ -8,6 +8,7 @@ import com.djs.dongjibsabackend.domain.enums.SocialType;
 import com.djs.dongjibsabackend.exception.AppException;
 import com.djs.dongjibsabackend.exception.ErrorCode;
 import com.djs.dongjibsabackend.repository.MemberRepository;
+import com.djs.dongjibsabackend.repository.PostRepository;
 import jakarta.transaction.Transactional;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final PostRepository postRepository;
 
     public boolean verifyPhoneNumber(PhoneNumberMemberRequest phoneNumberMemberRequest) {
 
@@ -124,5 +126,14 @@ public class MemberService {
             MemberEntity savedMember = memberRepository.save(MemberDto.toEntity(memberDto));
             return MemberDto.toDto(savedMember);
         }
+    }
+
+    @Transactional
+    public String deleteMember(Long memberId) {
+        MemberEntity member = memberRepository.findById(memberId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND,
+                                                                                                     String.format("%d는 존재하지 않는 회원입니다.", memberId)));
+        postRepository.deleteAllByMember(member);
+        memberRepository.delete(member);
+        return String.format("%d번 회원의 탈퇴가 완료되었습니다.", memberId);
     }
 }
