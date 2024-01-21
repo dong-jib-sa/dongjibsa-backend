@@ -90,7 +90,7 @@ public class PostController {
                                                                        .postDto(postDto)
                                                                        .includeCalorie(includeCalorie)
                                                                        .build();
-        return Response.success(postDto);
+        return Response.success(updatedPostResponse);
     }
 
     /* 게시글 삭제 */
