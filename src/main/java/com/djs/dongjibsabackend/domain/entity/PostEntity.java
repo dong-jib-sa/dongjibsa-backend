@@ -100,7 +100,7 @@ public class PostEntity extends BaseEntity {
     /* 4. 게시글 수정 */
     public void updatePost(EditPostRequest editPostRequest) {
         this.title = editPostRequest.getTitle();
-        this.content = editPostRequest.getTitle();
+        this.content = editPostRequest.getContent();
         this.expectingPrice = editPostRequest.getExpectingPrice();
         this.pricePerOne = editPostRequest.getPricePerOne();
         // this.recipeCalorie = editPostRequest.get
