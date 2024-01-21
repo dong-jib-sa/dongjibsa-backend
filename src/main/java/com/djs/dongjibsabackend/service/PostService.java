@@ -236,11 +236,29 @@ public class PostService {
 
     /* 게시글 삭제 */
     @Transactional
-    public String deletePost(Long postId) {
+    public String deletePost(Long postId, Long memberId) {
+
+        log.debug("서비스 진입, deletePost 메서드 작동 시작");
+
+        /* 유저 검증 */
+        MemberEntity member = memberRepository.findById(memberId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND,
+                                                                                                     String.format("%d는 존재하지 않는 유저입니다.", memberId)));
+        log.debug("사용자 검증 완료: {}", member.getId());
+
+        /* 게시글 검증 */
         PostEntity postEntity = postRepository.findById(postId).orElseThrow(() -> new AppException(ErrorCode.POST_NOT_FOUND,
-                                                                                                   String.format("%d는 존재하지 않는 게시물입니다.",
-                                                                                                                 postId)));
+                                                                                                   String.format("%d는 존재하지 않는 게시물입니다.", postId)));
+        log.debug("게시글 검증 완료: {}", postEntity.getId());
+
+        /* 요청 유저가 게시글 작성자인지 검증 */
+        if (!postEntity.getMember().getId().equals(member.getId())) {
+            throw new AppException(ErrorCode.USER_UNAUTHORIZED, String.format("본인의 게시글만 삭제할 수 있습니다. "));
+        }
+        log.debug("권한 검증 완료");
+
         postRepository.deleteById(postId);
+        log.debug("게시글 삭제 완료");
+
         return String.format("%d번 게시글이 삭제되었습니다.", postId);
     }
 }
