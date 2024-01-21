@@ -27,7 +27,8 @@ public enum ErrorCode {
     WRONG_FILE_FORMAT(HttpStatus.BAD_REQUEST, "Wrong File Format."),
     IMAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "Images Not Exist."),
 
-    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Error Occurs.");
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Error Occurs."),
+    MISSING_PARAMETER(HttpStatus.BAD_REQUEST, "Missing Parameters.");
 
     private HttpStatus httpStatus;
     private String message;
