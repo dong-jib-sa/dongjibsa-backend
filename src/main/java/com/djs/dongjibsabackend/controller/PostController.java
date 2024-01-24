@@ -78,8 +78,7 @@ public class PostController {
 
     /* 게시글 수정 */
     @PutMapping(path ="/{postId}", consumes = {"multipart/form-data"}, headers = ("content-type=multipart/*"))
-    public Response<RegisterPostResponse> editPost(@PathVariable Long postId,
-    @ModelAttribute EditPostRequest editPostRequest) throws IOException, MissingServletRequestPartException{
+    public Response<RegisterPostResponse> editPost(@PathVariable Long postId, @ModelAttribute EditPostRequest editPostRequest) throws IOException, MissingServletRequestPartException{
         PostDto postDto = postService.editPost(postId, editPostRequest);
         log.info("{}번 게시글 수정이 완료되었습니다", postId);
         boolean includeCalorie = false;

@@ -2,6 +2,7 @@ package com.djs.dongjibsabackend.service;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.djs.dongjibsabackend.domain.dto.image.ImageDto;
@@ -95,7 +96,8 @@ public class PostImageService {
                     new PutObjectRequest(bucket, key, inputStream, objectMetadata)
                         .withCannedAcl(CannedAccessControlList.PublicRead));
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error("S3 파일 업로드 중 오류 발생", e);
+//                   e.printStackTrace();
                 throw new AppException(ErrorCode.INTERNAL_SERVER_ERROR, "통신에 실패했습니다.");
             }
 
@@ -105,9 +107,9 @@ public class PostImageService {
 
             /* 8. 이미지 엔티티 생성 */
             ImageEntity image = ImageEntity.builder().post(post).url(imageUrl).build();
-            // ImageEntity savedImage = imageRepository.save(image); // save.
-            ImageDto imageDto = ImageDto.toDto(image);
-
+            ImageEntity savedImage = imageRepository.save(image); // save.
+            ImageDto imageDto = ImageDto.toDto(savedImage);
+            log.debug("image id: {}", savedImage.getId());
             imageUrls.add(imageDto);
         }
 
@@ -115,16 +117,20 @@ public class PostImageService {
     }
 
     /* 파일 삭제 */
-    public String deleteFile(String url) {
+    public String deleteFile(Long postId, String url) {
+        log.debug("이미지 Url: {}", url);
         String expression = ".com/";
         String uuidFileName = url.substring(url.lastIndexOf(expression) + expression.length());
+        log.debug("uuidFileName: {}", uuidFileName);
         String result ="";
+
         try {
             boolean isObjectExist = amazonS3Client.doesObjectExist(bucket, uuidFileName);
+            log.debug("객체 존재 여부: {}", isObjectExist);
 
             if (isObjectExist) { // true
-                amazonS3Client.deleteObject(bucket, uuidFileName);
-                log.info("%s에 위치한 파일을 삭제하였습니다.", uuidFileName);
+                amazonS3Client.deleteObject(new DeleteObjectRequest(bucket, uuidFileName));
+                log.debug("S3 파일 삭제 완료: {}", uuidFileName);
                 result = "SUCCESS";
             } else { // file Not Exist
                 log.error("해당 파일이 존재하지 않습니다.");

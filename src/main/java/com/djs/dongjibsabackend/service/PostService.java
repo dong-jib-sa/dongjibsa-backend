@@ -115,17 +115,19 @@ public class PostService {
         PostEntity savedPost = postRepository.save(post);
 
         /* 요청에 사진 파일이 있는 경우 업로드 (imgUrl) */
-        if (!CollectionUtils.isEmpty(req.getImages())) {
+        if (CollectionUtils.isEmpty(req.getImages())) {
+            // postRepository.save(savedPost);
+            PostDto savedPostDto = PostDto.toDto(savedPost);
+            return savedPostDto;
+
+        } else {
+
             List<ImageDto> imgUrls = postImageService.uploadAndSaveToDB(req.getImages(), savedPost.getId());
             // List<ImageDto> -> List<ImageEntity>
             List<ImageEntity> imgEntityList = ImageDto.toEntity(imgUrls, savedPost);
             savedPost.updatePostImageUrl(imgEntityList);
             PostEntity savedPostWithImages = postRepository.save(savedPost);
             PostDto savedPostDto = PostDto.toDto(savedPostWithImages);
-            return savedPostDto;
-        } else {
-            // postRepository.save(savedPost);
-            PostDto savedPostDto = PostDto.toDto(savedPost);
             return savedPostDto;
         }
     }
@@ -147,6 +149,7 @@ public class PostService {
     }
 
     /* 게시글 수정 */
+    @Transactional
     public PostDto editPost(Long postId, EditPostRequest editPostRequest) throws MissingServletRequestPartException {
 
         /* 작성자 검증 */
@@ -209,29 +212,79 @@ public class PostService {
 
         /* 3. 이미지 변경 */
 
-        if (CollectionUtils.isEmpty(editPostRequest.getImages())) { // 변경한 image 없음
-            // keep going
+        if (CollectionUtils.isEmpty(editPostRequest.getImages())) { // 변경 이미지 없음
             /* 변경된 포스트를 DB에 저장 */
-            PostEntity editedPost = postRepository.save(originalPost);
-            return PostDto.toDto(editedPost);
-        } else {
-            List<ImageEntity> originalImages =
-                imageRepository.findAllByPostId(postId).orElseThrow(() -> new AppException(ErrorCode.IMAGE_NOT_FOUND,
-                                                                                           String.format("%d번 게시글의 이미지가 존재하지 않습니다.", postId)));
-            // 원래 Post에서 저장한 이미지를 삭제한다.
-            for(ImageEntity image: originalImages) {
-                postImageService.deleteFile(image.getUrl());
+            if (imageRepository.findAllByPostId(postId) == null) { // 원래 이미지가 없을 경우
+                PostEntity editedPost = postRepository.save(originalPost);
+                log.debug("변경된 이미지가 없으며, 변경된 게시글 저장에 성공했습니다. 게시글 ID: {}", editedPost.getId());
+                return PostDto.toDto(editedPost);
+            } else { // 이미지가 있을 경우
+                List<ImageEntity> originalImage = imageRepository.findAllByPostId(postId)
+                                                                 .orElseThrow(() -> new AppException(ErrorCode.IMAGE_NOT_FOUND,
+                                                                                                     String.format("%s의 이미지가 없습니다.", postId)));
+                originalPost.updatePostImageUrl(originalImage); // 불필요한 로직같다.
+                PostEntity editedPost = postRepository.save(originalPost);
+                log.debug("변경된 이미지가 없으며, 변경된 게시글 저장에 성공했습니다. 게시글 ID: {}", editedPost.getId());
+                return PostDto.toDto(editedPost);
             }
 
-            // 요청 내 이미지를 새롭게 저장하는 List<ImageEntity>를 만든다.
-            List<ImageDto> newImageDtos = postImageService.uploadAndSaveToDB(editPostRequest.getImages(), postId);
-            List<ImageEntity> newImages = ImageDto.toEntity(newImageDtos, originalPost);
+        // 변경 이미지 있을 경우
+        } else {
+            List<ImageEntity> originalImages = imageRepository.findAllByPostId(postId)
+                                                              .orElseThrow(() -> new AppException(ErrorCode.IMAGE_NOT_FOUND,
+                                                                                                  String.format("%d번 게시글의 이미지가 존재하지 않습니다.", postId)));
+            // 원래 게시글에 이미지가 있는 경우, 없는 경우로 분기하여 처리
+            if (CollectionUtils.isEmpty(originalImages)) {
+                // log.debug("originalImages에 저장된 이미지가 없습니다. ", originalImages);
 
-            // DB 저장
-            originalPost.updatePostImageUrl(newImages);
-            PostEntity editedPostWithNewImages = postRepository.save(originalPost);
-            return PostDto.toDto(editedPostWithNewImages);
+                // 원래 Post에서 저장한 이미지를 삭제한다.
+                // for(ImageEntity image: originalImages) {
+                    // postImageService.deleteFile(image.getPost().getId(), image.getUrl());
+                // }
+
+                // image Url 데이터 삭제
+                // imageRepository.deleteAllByPostId(postId);
+
+                // 요청 내 이미지를 s3에 저장하고, ImageDto 리스트를 만든다.
+                List<ImageDto> newImageDtos = postImageService.uploadAndSaveToDB(editPostRequest.getImages(), postId);
+                log.debug("게시글 id: {}", postId);
+                List<ImageEntity> newImages = ImageDto.toEntity(newImageDtos, originalPost);
+                log.debug("originalPost: {}", originalPost.getId());
+
+                // DB 저장
+                originalPost.updatePostImageUrl(newImages);
+                PostEntity editedPostWithNewImages = postRepository.save(originalPost);
+                return PostDto.toDto(editedPostWithNewImages);
+
+            } else {
+                log.debug("originalImages의 첫번째 이미지 URL: {}", originalImages);
+
+                // 원래 Post에서 저장한 이미지를 삭제한다.
+                for(ImageEntity image: originalImages) {
+                    postImageService.deleteFile(image.getPost().getId(), image.getUrl());
+                }
+
+                // image Url 데이터 삭제
+                deleteImagesByPostId(postId);
+                // imageRepository.deleteAllByPostId(postId); // Error
+
+                // 요청 내 이미지를 저장한다.
+                List<ImageDto> newImageDtos = postImageService.uploadAndSaveToDB(editPostRequest.getImages(), postId);
+                List<ImageEntity> newImages = ImageDto.toEntity(newImageDtos, originalPost);
+
+                // DB 저장
+                originalPost.updatePostImageUrl(newImages);
+                PostEntity editedPostWithNewImages = postRepository.save(originalPost);
+                return PostDto.toDto(editedPostWithNewImages);
+            }
+
+
         }
+    }
+
+    @Transactional
+    public void deleteImagesByPostId (Long postId) {
+        imageRepository.deleteAllByPostId(postId);
     }
 
     /* 게시글 삭제 */
