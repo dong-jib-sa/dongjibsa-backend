@@ -57,8 +57,8 @@ public class PostEntity extends BaseEntity {
     private List<PostIngredientEntity> recipeIngredients = new ArrayList<>();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "post", orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<ImageEntity> imgUrls; // 레시피 이미지 Url
+    @OneToMany(mappedBy = "post", cascade = CascadeType.PERSIST)
+    private List<ImageEntity> imgUrls = new ArrayList<>(); // 레시피 이미지 Url
 
     @Builder
     public PostEntity(Long id, String title, String content,

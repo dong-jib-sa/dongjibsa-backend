@@ -40,6 +40,7 @@ public class ImageDto {
 
         for (ImageDto dto: dtos) {
             ImageEntity imageEntity = ImageEntity.builder()
+                                                 .id(dto.getId())
                                                  .url(dto.getImageUrl())
                                                  .post(post)
                                                  .build();
