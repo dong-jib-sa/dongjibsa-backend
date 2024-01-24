@@ -94,8 +94,8 @@ public class PostController {
     }
 
     /* 게시글 삭제 */
-    @DeleteMapping("/{postId}")
-    public ResponseEntity<Response<String>> delete(@PathVariable Long postId, @RequestBody Long memberId) {
+    @DeleteMapping("/{postId}/{memberId}")
+    public ResponseEntity<Response<String>> delete(@PathVariable Long postId, @PathVariable Long memberId) {
         if (memberId == null) {
             throw new AppException(ErrorCode.MISSING_PARAMETER, "memberId값이 없습니다.");
         }
