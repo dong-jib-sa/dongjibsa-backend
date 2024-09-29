@@ -7,10 +7,6 @@
 
 Our Basket은 식생활에서 제로웨이스트를 실천하고 싶은 청년 1인 가구를 위해, 소비하는 양보다 구매하는 양이 더 많아 버려지는 식재료를 최소화할 수 있도록 동네에서 식재료를 공동구매할 기회를 제공하는 O2O 식재료 공동구매 커뮤니티 플랫폼입니다.
 
-## 주요 기능
-- 나눔 글 작성으로 공동 구매자 모집
-- 마이 페이지에서 나의 제로웨이스트 현황 확인
-
 ## 기술 스택
 - Java 17
 - Spring Boot 3.0.1
@@ -20,6 +16,13 @@ Our Basket은 식생활에서 제로웨이스트를 실천하고 싶은 청년 1
 - Github Actions
 - Jenkins
 - Docker
+
+## 주요 기능
+- 나눔 글 작성으로 공동 구매자 모집
+- 마이 페이지에서 나의 제로웨이스트 현황 확인
+
+## Demo
+![video](https://github.com/user-attachments/assets/a79900dd-9bdd-4f7a-a795-a8b3d0897070)
 
 ## Architecture & ER Diagram
 
