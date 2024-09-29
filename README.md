@@ -12,19 +12,20 @@ Our Basket은 식생활에서 제로웨이스트를 실천하고 싶은 청년 1
 - 마이 페이지에서 나의 제로웨이스트 현황 확인
 
 ## 기술 스택
-Java 17
-Spring Boot 3.0.1
-Spring Data JPA
-AWS EC2, S3
-MySQL
-Github Actions
-Jenkins
-Docker
+- Java 17
+- Spring Boot 3.0.1
+- Spring Data JPA
+- AWS EC2, S3
+- MySQL
+- Github Actions
+- Jenkins
+- Docker
 
 ## Architecture & ER Diagram
 
-![ER 다이어그램](https://github.com/user-attachments/assets/71182ca2-fbdb-4c9e-baa7-7b2c037a0dcd)
 ![아키텍처](https://github.com/user-attachments/assets/4343f046-d984-4af2-8271-9fe42f44c651)
+![ER 다이어그램](https://github.com/user-attachments/assets/71182ca2-fbdb-4c9e-baa7-7b2c037a0dcd)
+
 
 ## 함께 한 이들
 - FE(iOS) 김혜지
